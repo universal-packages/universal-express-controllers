@@ -283,7 +283,7 @@ Middleware actions can use all the `Argument Decorators` plus one more to access
   }
   ```
 
-### Global middleware
+## Global middleware
 
 In order to apply middleware to the whole app, you need to prepend your middleware files with `.middleware` all files in your project that will be loaded and added to the express app before starting building it with controller actions and other middleware.
 
@@ -297,11 +297,7 @@ Recommended structure:
   |_ controllers
 ```
 
-## Typescript
-
-This library is developed in TypeScript and shipped fully typed.
-
-### Middleware as functions
+## Middleware as functions
 
 You can use middleware as a pure `RequestHandler` function in both top level middleware and middleware passed through `@ControllerUse()` or `@ActionUse()`.
 
@@ -311,6 +307,10 @@ export default function top(request, response, next) {
   next()
 }
 ```
+
+## Typescript
+
+This library is developed in TypeScript and shipped fully typed.
 
 ## Contributing
 
