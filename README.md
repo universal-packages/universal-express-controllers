@@ -309,6 +309,19 @@ export default function top(request, response, next) {
 }
 ```
 
+## Events
+
+`ExpressApp` will emit events regarding request being processed.
+
+```js
+expressApp.on('request/start', ({ request }) => console.log(request))
+expressApp.on('request/not-found', ({ request, measurement }) => console.log(request, measurement))
+expressApp.on('request/error', ({ error, request, measurement }) => console.log(error, request, measurement))
+expressApp.on('request/middleware', ({ name }) => console.log(name))
+expressApp.on('request/hadler', ({ request, handler }) => console.log(request, handler))
+expressApp.on('request/end', ({ request, handler, measurement }) => console.log(request, handler, measurement))
+```
+
 ## Typescript
 
 This library is developed in TypeScript and shipped fully typed.

@@ -16,6 +16,7 @@ describe('ExpressApp', (): void => {
     await app.run()
 
     app.on('request/start', eventListener)
+    app.on('request/handler', eventListener)
     app.on('request/end', eventListener)
     app.on('request/not-found', eventListener)
 
@@ -70,30 +71,42 @@ describe('ExpressApp', (): void => {
 
     expect(eventListener.mock.calls).toMatchObject([
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'GoodController#getEnd' }],
       [{ event: 'request/end', handler: 'GoodController#getEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'GoodController#postEnd' }],
       [{ event: 'request/end', handler: 'GoodController#postEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'GoodController#patchEnd' }],
       [{ event: 'request/end', handler: 'GoodController#patchEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'GoodController#putEnd' }],
       [{ event: 'request/end', handler: 'GoodController#putEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'GoodController#deleteEnd' }],
       [{ event: 'request/end', handler: 'GoodController#deleteEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'GoodController#headEnd' }],
       [{ event: 'request/end', handler: 'GoodController#headEnd' }],
       [{ event: 'request/start' }],
       [{ event: 'request/not-found' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'ExcelentController#getEnd' }],
       [{ event: 'request/end', handler: 'ExcelentController#getEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'ExcelentController#postEnd' }],
       [{ event: 'request/end', handler: 'ExcelentController#postEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'ExcelentController#patchEnd' }],
       [{ event: 'request/end', handler: 'ExcelentController#patchEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'ExcelentController#putEnd' }],
       [{ event: 'request/end', handler: 'ExcelentController#putEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'ExcelentController#deleteEnd' }],
       [{ event: 'request/end', handler: 'ExcelentController#deleteEnd' }],
       [{ event: 'request/start' }],
+      [{ event: 'request/handler', handler: 'ExcelentController#headEnd' }],
       [{ event: 'request/end', handler: 'ExcelentController#headEnd' }]
     ])
   })

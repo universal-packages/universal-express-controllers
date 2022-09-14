@@ -71,7 +71,7 @@ export default class ExpressApp extends EventEmitter {
     this.expressApp.use((request: Request, response: Response, next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
       response.statusCode = StatusCodes.NOT_FOUND
-      this.emit('request/not-found', { event: 'request/not-found', measurement: requestContext.requestMeasurer.finish() })
+      this.emit('request/not-found', { event: 'request/not-found', request, measurement: requestContext.requestMeasurer.finish() })
       response.end()
     })
 
@@ -79,7 +79,7 @@ export default class ExpressApp extends EventEmitter {
       const requestContext = request['requestContext'] as RequestContext
       error.status = error.status || StatusCodes.INTERNAL_SERVER_ERROR
       response.status(error.status)
-      this.emit('request/error', { event: 'request/error', error, measurement: requestContext.requestMeasurer.finish() })
+      this.emit('request/error', { event: 'request/error', error, request, measurement: requestContext.requestMeasurer.finish() })
       response.end()
     })
   }
@@ -212,6 +212,11 @@ export default class ExpressApp extends EventEmitter {
     return async (request: Request, response: Response, next: NextFunction): Promise<any> => {
       const requestContext = request['requestContext'] as RequestContext
       try {
+        this.emit('request/handler', {
+          event: 'request/handler',
+          handler: `${target.name}#${methodRegisry.propertyKey}`,
+          request
+        })
         const controllerInstance = new target(request, response)
         const args = this.generateActionArgs(methodRegisry, request, response)
 
