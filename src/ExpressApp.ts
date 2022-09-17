@@ -79,16 +79,23 @@ export default class ExpressApp extends EventEmitter {
       const requestContext = request['requestContext'] as RequestContext
       error.status = error.status || StatusCodes.INTERNAL_SERVER_ERROR
       response.status(error.status)
-      this.emit('request/error', { event: 'request/error', error, request, measurement: requestContext.requestMeasurer.finish() })
+      this.emit('request/error', { event: 'request/error', error, handler: requestContext.handler, request, measurement: requestContext.requestMeasurer.finish() })
       response.end()
     })
   }
 
   private async loadMiddleware(): Promise<void> {
+    const thridPartyModules = await loadModules(this.options.appLocation, { conventionPrefix: 'universal-core-express-middleware' })
     const modules = await loadModules(this.options.appLocation, { conventionPrefix: 'middleware' })
+    const finalModules = [
+      ...thridPartyModules.sort((moduleA: ModuleRegistry, ModuleB: ModuleRegistry): number =>
+        moduleA.location.replace(/^.*(\\|\/|\:)/, '') > ModuleB.location.replace(/^.*(\\|\/|\:)/, '') ? 1 : -1
+      ),
+      ...modules
+    ]
 
-    for (let i = 0; i < modules.length; i++) {
-      const currentModule = modules[i]
+    for (let i = 0; i < finalModules.length; i++) {
+      const currentModule = finalModules[i]
       this.expressApp.use(this.generateMiddlewareHandler(currentModule.exports))
     }
   }
@@ -212,11 +219,9 @@ export default class ExpressApp extends EventEmitter {
     return async (request: Request, response: Response, next: NextFunction): Promise<any> => {
       const requestContext = request['requestContext'] as RequestContext
       try {
-        this.emit('request/handler', {
-          event: 'request/handler',
-          handler: `${target.name}#${methodRegisry.propertyKey}`,
-          request
-        })
+        const handler = `${target.name}#${methodRegisry.propertyKey}`
+        request['requestContext']['handler'] = handler
+        this.emit('request/handler', { event: 'request/handler', handler, request })
         const controllerInstance = new target(request, response)
         const args = this.generateActionArgs(methodRegisry, request, response)
 
@@ -224,12 +229,7 @@ export default class ExpressApp extends EventEmitter {
 
         response.end()
 
-        this.emit('request/end', {
-          event: 'request/end',
-          handler: `${target.name}#${methodRegisry.propertyKey}`,
-          measurement: requestContext.requestMeasurer.finish(),
-          request
-        })
+        this.emit('request/end', { event: 'request/end', handler, measurement: requestContext.requestMeasurer.finish(), request })
       } catch (error) {
         next(error)
       }

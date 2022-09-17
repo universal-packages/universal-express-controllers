@@ -22,4 +22,5 @@ export interface MiddlewareInterface {
 
 export interface RequestContext {
   requestMeasurer: TimeMeasurer
+  handler?: string
 }
