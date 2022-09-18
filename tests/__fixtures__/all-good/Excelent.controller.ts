@@ -8,8 +8,8 @@ export default class ExcelentController extends BaseController {
   }
 
   @Post('post-end')
-  public async postEnd(): Promise<void> {
-    this.response.json({ post: true })
+  public async postEnd(): Promise<any> {
+    return { post: true }
   }
 
   @Patch('patch-end')

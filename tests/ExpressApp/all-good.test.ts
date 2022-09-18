@@ -26,7 +26,7 @@ describe('ExpressApp', (): void => {
 
     response = await fetch(`http://localhost:${port}/good/post-end`, { method: 'post' })
     expect(response.status).toBe(200)
-    expect(await response.json()).toEqual({ post: true })
+    expect(await response.text()).toEqual('{ post: true }')
 
     response = await fetch(`http://localhost:${port}/good/patch-end`, { method: 'patch' })
     expect(response.status).toBe(200)

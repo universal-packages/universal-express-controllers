@@ -225,7 +225,15 @@ export default class ExpressApp extends EventEmitter {
         const controllerInstance = new target(request, response)
         const args = this.generateActionArgs(methodRegisry, request, response)
 
-        await controllerInstance[methodRegisry.propertyKey](...args)
+        const result = await controllerInstance[methodRegisry.propertyKey](...args)
+
+        if (result) {
+          if (typeof result === 'object') {
+            response.json(result)
+          } else {
+            response.send(result)
+          }
+        }
 
         response.end()
 
