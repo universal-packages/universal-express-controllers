@@ -8,8 +8,8 @@ export default class GoodController extends BaseController {
   }
 
   @Post('post-end')
-  public async postEnd(): Promise<string> {
-    return '{ post: true }'
+  public async postEnd(): Promise<void> {
+    this.json({ post: true })
   }
 
   @Patch('patch-end')

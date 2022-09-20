@@ -1,13 +1,11 @@
 import { Request, Response } from 'express'
+import BaseController from './BaseController'
 
-export default class BaseMiddleware<O = any> {
-  protected readonly request: Request
-  protected readonly response: Response
+export default class BaseMiddleware<O = any> extends BaseController {
   protected readonly options: O
 
   public constructor(request: Request, response: Response, options: O) {
-    this.request = request
-    this.response = response
+    super(request, response)
     this.options = options
   }
 

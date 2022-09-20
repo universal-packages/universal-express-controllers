@@ -1,15 +1,15 @@
 import { BaseController, Controller, Delete, Get, Head, Patch, Post, Put } from '../../../src'
 
 @Controller('excelent')
-export default class ExcelentController extends BaseController {
+export default class ExcellentController extends BaseController {
   @Get()
   public async getEnd(): Promise<void> {
-    this.response.json({ get: true })
+    this.json({ get: true })
   }
 
   @Post('post-end')
-  public async postEnd(): Promise<any> {
-    return { post: true }
+  public async postEnd(): Promise<void> {
+    this.json({ post: true })
   }
 
   @Patch('patch-end')

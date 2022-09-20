@@ -22,7 +22,7 @@ import { ExpressApp } from '@universal-packages/express-controllers'
 
 const expressApp = new ExpressApp({ appLocation: './src', port: 3000 })
 
-// Load decorated controllers and middlewares
+// Load decorated controllers and middleware
 await expressApp.prepare()
 await expressApp.run()
 
@@ -42,6 +42,20 @@ await expressApp.stop()
   Enable cors for this app, optionally passing [CorsOptions](https://expressjs.com/en/resources/middleware/cors.html)
 - **`helmet`** `HelmetOptions | true`
   Enable helmet for this app, optionally passing [HelmetOptions](https://helmetjs.github.io/)
+
+## BaseController
+
+Use the base controller Class to enable your controller to use some goodies. It implement almost the same functionally as the [response](https://expressjs.com/en/4x/api.html#res) object so instead of doing `response.something()` you can directly call your controller instance.
+
+```js
+import { BaseController } from '@universal-packages/express-controllers'
+
+export default class AuthController extends BaseController {
+  async index() {
+    this.status('OK').send('HOLA')
+  }
+}
+```
 
 ## Decorators
 
@@ -246,6 +260,20 @@ You can simplify the code inside your actions by using argument decorators to ge
     this.response.json({ query, ordered })
   }
   ```
+
+## BaseMiddleware
+
+Use the base middleware Class to enable your middleware to use some goodies. It implement almost the same functionally as the [response](https://expressjs.com/en/4x/api.html#res) object so instead of doing `response.something()` you can directly call your middleware instance.
+
+```js
+import { BaseMiddleware } from '@universal-packages/express-controllers'
+
+export default class AuthMiddleware extends BaseMiddleware {
+  async middleware() {
+    this.status('OK').send('HOLA')
+  }
+}
+```
 
 ### @Middleware()
 

@@ -101,6 +101,10 @@ export default class ExpressApp extends EventEmitter {
   }
 
   private async loadControllers(): Promise<void> {
+    // Trigger portential third party controllers
+    await getNamespace(NAMESAPCE, './node_modules', 'controller')
+
+    // And now our apps controllers
     const namespaceRegistry = await getNamespace(NAMESAPCE, this.options.appLocation, 'controller')
 
     if (namespaceRegistry) {
@@ -225,15 +229,7 @@ export default class ExpressApp extends EventEmitter {
         const controllerInstance = new target(request, response)
         const args = this.generateActionArgs(methodRegisry, request, response)
 
-        const result = await controllerInstance[methodRegisry.propertyKey](...args)
-
-        if (result) {
-          if (typeof result === 'object') {
-            response.json(result)
-          } else {
-            response.send(result)
-          }
-        }
+        await controllerInstance[methodRegisry.propertyKey](...args)
 
         response.end()
 

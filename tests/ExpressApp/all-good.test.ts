@@ -19,6 +19,7 @@ describe('ExpressApp', (): void => {
     app.on('request/handler', eventListener)
     app.on('request/end', eventListener)
     app.on('request/not-found', eventListener)
+    app.on('request/error', eventListener)
 
     let response = await fetch(`http://localhost:${port}/good`)
     expect(response.status).toBe(200)
@@ -26,7 +27,7 @@ describe('ExpressApp', (): void => {
 
     response = await fetch(`http://localhost:${port}/good/post-end`, { method: 'post' })
     expect(response.status).toBe(200)
-    expect(await response.text()).toEqual('{ post: true }')
+    expect(await response.json()).toEqual({ post: true })
 
     response = await fetch(`http://localhost:${port}/good/patch-end`, { method: 'patch' })
     expect(response.status).toBe(200)
@@ -69,6 +70,14 @@ describe('ExpressApp', (): void => {
     response = await fetch(`http://localhost:${port}/excelent/head-end`, { method: 'head' })
     expect(response.status).toBe(200)
 
+    // IF CHANGING EVENTS PRINT THEM USING THIS MF
+    // console.log(
+    //   JSON.stringify(eventListener.mock.calls, (key, value) => {
+    //     if (['request', 'measurement'].includes(key)) return undefined
+    //     return value
+    //   })
+    // )
+
     expect(eventListener.mock.calls).toMatchObject([
       [{ event: 'request/start' }],
       [{ event: 'request/handler', handler: 'GoodController#getEnd' }],
@@ -91,23 +100,23 @@ describe('ExpressApp', (): void => {
       [{ event: 'request/start' }],
       [{ event: 'request/not-found' }],
       [{ event: 'request/start' }],
-      [{ event: 'request/handler', handler: 'ExcelentController#getEnd' }],
-      [{ event: 'request/end', handler: 'ExcelentController#getEnd' }],
+      [{ event: 'request/handler', handler: 'ExcellentController#getEnd' }],
+      [{ event: 'request/end', handler: 'ExcellentController#getEnd' }],
       [{ event: 'request/start' }],
-      [{ event: 'request/handler', handler: 'ExcelentController#postEnd' }],
-      [{ event: 'request/end', handler: 'ExcelentController#postEnd' }],
+      [{ event: 'request/handler', handler: 'ExcellentController#postEnd' }],
+      [{ event: 'request/end', handler: 'ExcellentController#postEnd' }],
       [{ event: 'request/start' }],
-      [{ event: 'request/handler', handler: 'ExcelentController#patchEnd' }],
-      [{ event: 'request/end', handler: 'ExcelentController#patchEnd' }],
+      [{ event: 'request/handler', handler: 'ExcellentController#patchEnd' }],
+      [{ event: 'request/end', handler: 'ExcellentController#patchEnd' }],
       [{ event: 'request/start' }],
-      [{ event: 'request/handler', handler: 'ExcelentController#putEnd' }],
-      [{ event: 'request/end', handler: 'ExcelentController#putEnd' }],
+      [{ event: 'request/handler', handler: 'ExcellentController#putEnd' }],
+      [{ event: 'request/end', handler: 'ExcellentController#putEnd' }],
       [{ event: 'request/start' }],
-      [{ event: 'request/handler', handler: 'ExcelentController#deleteEnd' }],
-      [{ event: 'request/end', handler: 'ExcelentController#deleteEnd' }],
+      [{ event: 'request/handler', handler: 'ExcellentController#deleteEnd' }],
+      [{ event: 'request/end', handler: 'ExcellentController#deleteEnd' }],
       [{ event: 'request/start' }],
-      [{ event: 'request/handler', handler: 'ExcelentController#headEnd' }],
-      [{ event: 'request/end', handler: 'ExcelentController#headEnd' }]
+      [{ event: 'request/handler', handler: 'ExcellentController#headEnd' }],
+      [{ event: 'request/end', handler: 'ExcellentController#headEnd' }]
     ])
   })
 })
