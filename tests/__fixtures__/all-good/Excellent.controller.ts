@@ -1,6 +1,6 @@
 import { BaseController, Controller, Delete, Get, Head, Patch, Post, Put } from '../../../src'
 
-@Controller('excelent')
+@Controller('excellent')
 export default class ExcellentController extends BaseController {
   @Get()
   public async getEnd(): Promise<void> {

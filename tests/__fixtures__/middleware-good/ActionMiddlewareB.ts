@@ -1,7 +1,7 @@
 import { BaseMiddleware } from '../../../src'
 
-export default class AcctionMiddlewareB extends BaseMiddleware {
+export default class ActionMiddlewareB extends BaseMiddleware {
   public async middleware(): Promise<void> {
-    this.request['context'].push({ acctionMiddlewareB: true, options: this.options })
+    this.request['context'].push({ actionMiddlewareB: true, options: this.options })
   }
 }

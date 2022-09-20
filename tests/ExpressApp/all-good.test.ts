@@ -47,27 +47,27 @@ describe('ExpressApp', (): void => {
     response = await fetch(`http://localhost:${port}/nonexistent`)
     expect(response.status).toBe(404)
 
-    response = await fetch(`http://localhost:${port}/excelent`)
+    response = await fetch(`http://localhost:${port}/excellent`)
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ get: true })
 
-    response = await fetch(`http://localhost:${port}/excelent/post-end`, { method: 'post' })
+    response = await fetch(`http://localhost:${port}/excellent/post-end`, { method: 'post' })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ post: true })
 
-    response = await fetch(`http://localhost:${port}/excelent/patch-end`, { method: 'patch' })
+    response = await fetch(`http://localhost:${port}/excellent/patch-end`, { method: 'patch' })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ patch: true })
 
-    response = await fetch(`http://localhost:${port}/excelent/put-end`, { method: 'put' })
+    response = await fetch(`http://localhost:${port}/excellent/put-end`, { method: 'put' })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ put: true })
 
-    response = await fetch(`http://localhost:${port}/excelent/delete-end`, { method: 'delete' })
+    response = await fetch(`http://localhost:${port}/excellent/delete-end`, { method: 'delete' })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ delete: true })
 
-    response = await fetch(`http://localhost:${port}/excelent/head-end`, { method: 'head' })
+    response = await fetch(`http://localhost:${port}/excellent/head-end`, { method: 'head' })
     expect(response.status).toBe(200)
 
     // IF CHANGING EVENTS PRINT THEM USING THIS MF

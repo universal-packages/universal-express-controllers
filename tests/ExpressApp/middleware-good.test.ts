@@ -24,22 +24,22 @@ describe('ExpressApp', (): void => {
     let response = await fetch(`http://localhost:${port}/good`)
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual([
-      { excelentMiddleware: true },
+      { excellentMiddleware: true },
       { goodMiddleware: true },
       { controllerMiddlewareB: true, options: { middle: 'c-b' } },
       { controllerMiddlewareA: true, options: { middle: 'c-a' } },
-      { acctionMiddlewareB: true, options: { middle: 'a-b' } },
-      { acctionMiddlewareA: true, options: { middle: 'a-a' } }
+      { actionMiddlewareB: true, options: { middle: 'a-b' } },
+      { actionMiddlewareA: true, options: { middle: 'a-a' } }
     ])
 
     expect(eventListener.mock.calls).toMatchObject([
       [{ event: 'request/start' }],
-      [{ event: 'request/middleware', name: 'excelent' }],
+      [{ event: 'request/middleware', name: 'excellent' }],
       [{ event: 'request/middleware', name: 'good' }],
       [{ event: 'request/middleware', name: 'ControllerMiddlewareB' }],
       [{ event: 'request/middleware', name: 'ControllerMiddlewareA' }],
-      [{ event: 'request/middleware', name: 'AcctionMiddlewareB' }],
-      [{ event: 'request/middleware', name: 'AcctionMiddlewareA' }],
+      [{ event: 'request/middleware', name: 'ActionMiddlewareB' }],
+      [{ event: 'request/middleware', name: 'ActionMiddlewareA' }],
       [{ event: 'request/end', handler: 'GoodController#getEnd' }]
     ])
   })

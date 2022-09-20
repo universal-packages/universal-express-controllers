@@ -1,8 +1,8 @@
 import { BaseController, Controller, Get } from '../../../src'
 import { ActionUse } from '../../../src/ActionUse.decorator'
 import { ControllerUse } from '../../../src/ControllerUse.decorator'
-import AcctionMiddlewareA from './ActionMiddlewareA'
-import AcctionMiddlewareB from './ActionMiddlewareB'
+import ActionMiddlewareA from './ActionMiddlewareA'
+import ActionMiddlewareB from './ActionMiddlewareB'
 import ControllerMiddlewareA from './ControllerMiddlewareA'
 import ControllerMiddlewareB from './ControllerMiddlewareB'
 
@@ -11,8 +11,8 @@ import ControllerMiddlewareB from './ControllerMiddlewareB'
 @ControllerUse(ControllerMiddlewareB, { middle: 'c-b' })
 export default class GoodController extends BaseController {
   @Get()
-  @ActionUse(AcctionMiddlewareA, { middle: 'a-a' })
-  @ActionUse(AcctionMiddlewareB, { middle: 'a-b' })
+  @ActionUse(ActionMiddlewareA, { middle: 'a-a' })
+  @ActionUse(ActionMiddlewareB, { middle: 'a-b' })
   public async getEnd(): Promise<void> {
     this.response.json(this.request['context'])
   }
