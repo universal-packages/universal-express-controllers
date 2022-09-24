@@ -10,6 +10,6 @@ export default class BaseMiddleware<O = any> extends BaseController {
   }
 
   public async middleware(..._args: any[]): Promise<void> {
-    throw new Error('Middlewares should implement the "middleware" method')
+    throw new Error('Middleware should implement the "middleware" method')
   }
 }

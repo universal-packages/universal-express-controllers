@@ -12,7 +12,7 @@ describe('ExpressApp', (): void => {
     }
 
     expect(error.message).toMatch(
-      /Class BadController class has been registred with multiple @Controller and\/or @Middleware what\?\n.*__fixtures__\/double-registry-class\/Bad.controller.ts/
+      /Class BadController class has been registered with multiple @Controller and\/or @Middleware what\?\n.*__fixtures__\/double-registry-class\/Bad.controller.ts/
     )
   })
 })

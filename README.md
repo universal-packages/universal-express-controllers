@@ -11,6 +11,12 @@
 ```shell
 npm install @universal-packages/express-controllers
 npm install express
+
+# Optional as needed
+npm install cookie-parser
+npm install cors
+npm install helmet
+npm install pug
 ```
 
 ## ExpressApp
@@ -104,7 +110,7 @@ export default class AuthController extends BaseController {}
 
 ### @Action()
 
-Enables a controller instance method to be called when the oute matches.
+Enables a controller instance method to be called when the route matches.
 
 #### arguments
 
@@ -279,7 +285,7 @@ export default class AuthMiddleware extends BaseMiddleware {
 
 Registers a class to behave as a middleware. To be able to access `this.request` and `this.response` and `this.options` inside your middleware action you can extend your controller with the `BaseMiddleware`, is not necessary but useful to access those object that way instead of using `Argument Decorators`.
 
-> Middlewares need to export the middleware class as the default module in order to all work correctly.
+> Middleware need to export the middleware class as the default module in order to all work correctly.
 
 ```js
 import { StatusCodes } from 'http-status-codes'
@@ -346,7 +352,7 @@ expressApp.on('request/start', ({ request }) => console.log(request))
 expressApp.on('request/not-found', ({ request, measurement }) => console.log(request, measurement))
 expressApp.on('request/error', ({ error, request, measurement }) => console.log(error, request, measurement))
 expressApp.on('request/middleware', ({ name }) => console.log(name))
-expressApp.on('request/hadler', ({ request, handler }) => console.log(request, handler))
+expressApp.on('request/handler', ({ request, handler }) => console.log(request, handler))
 expressApp.on('request/end', ({ request, handler, measurement }) => console.log(request, handler, measurement))
 ```
 

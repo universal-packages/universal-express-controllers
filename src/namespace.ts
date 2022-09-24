@@ -1,1 +1,1 @@
-export const NAMESAPCE = 'universal-express-controllers'
+export const NAMESPACE = 'universal-express-controllers'

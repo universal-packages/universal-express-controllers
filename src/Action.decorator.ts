@@ -1,7 +1,7 @@
 import { MethodDecorator, MethodDecoratorFunction } from '@universal-packages/namespaced-decorators'
 import { ActionDecoration, ActionOptions } from './Action.types'
 import { HTTPVerb } from './ExpressApp.types'
-import { NAMESAPCE } from './namespace'
+import { NAMESPACE } from './namespace'
 
 export function Action(method: HTTPVerb, path?: string): MethodDecoratorFunction
 export function Action(method: HTTPVerb, options?: ActionOptions): MethodDecoratorFunction
@@ -12,7 +12,7 @@ export function Action(method: HTTPVerb, path?: string | ActionOptions, options?
   const actualOptions = typeof path === 'string' ? options : path
   const decoration: ActionDecoration = { __type: 'action', method, path: actualPath, options: actualOptions }
 
-  return MethodDecorator(NAMESAPCE, decoration)
+  return MethodDecorator(NAMESPACE, decoration)
 }
 
 export function Delete(path?: string): MethodDecoratorFunction

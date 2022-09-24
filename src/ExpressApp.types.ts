@@ -12,8 +12,10 @@ export type Middleware = typeof BaseMiddleware | RequestHandler
 export interface ExpressAppOptions extends ListenOptions {
   appLocation: string
   bodyParser?: BodyParser | BodyParser[]
+  cookieParser?: { secret: string } | true
   cors?: CorsOptions | true
   helmet?: HelmetOptions | true
+  viewEngine?: string | 'pug'
 }
 
 export interface MiddlewareInterface {

@@ -1,6 +1,7 @@
 import { loadModules, ModuleRegistry } from '@universal-packages/module-loader'
 import { ClassRegistry, ClassType, Decoration, getNamespace, MethodRegistry } from '@universal-packages/namespaced-decorators'
 import { startMeasurement } from '@universal-packages/time-measurer'
+import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import EventEmitter from 'events'
 import express, { Express, NextFunction, Request, RequestHandler, Response, Router } from 'express'
@@ -16,7 +17,7 @@ import BaseMiddleware from './BaseMiddleware'
 import { ControllerDecoration } from './Controller.types'
 import { ControllerUseDecoration } from './ControllerUse.types'
 import { BodyParser, ExpressAppOptions, Middleware, RequestContext } from './ExpressApp.types'
-import { NAMESAPCE } from './namespace'
+import { NAMESPACE } from './namespace'
 import { MiddlewareDecoration } from './Middleware.types'
 
 export default class ExpressApp extends EventEmitter {
@@ -65,6 +66,8 @@ export default class ExpressApp extends EventEmitter {
 
     if (this.options.helmet) this.expressApp.use(helmet(this.options.helmet === true ? {} : this.options.helmet))
     if (this.options.cors) this.expressApp.use(cors(this.options.cors === true ? {} : this.options.cors))
+    if (this.options.cookieParser) this.expressApp.use(cookieParser(this.options.cookieParser === true ? undefined : this.options.cookieParser.secret))
+    if (this.options.viewEngine) this.expressApp.set('view engine', this.options.viewEngine)
   }
 
   private async applyPostMiddleware(): Promise<void> {
@@ -85,10 +88,10 @@ export default class ExpressApp extends EventEmitter {
   }
 
   private async loadMiddleware(): Promise<void> {
-    const thridPartyModules = await loadModules(this.options.appLocation, { conventionPrefix: 'universal-core-express-middleware' })
+    const thirdPartyModules = await loadModules(this.options.appLocation, { conventionPrefix: 'universal-core-express-middleware' })
     const modules = await loadModules(this.options.appLocation, { conventionPrefix: 'middleware' })
     const finalModules = [
-      ...thridPartyModules.sort((moduleA: ModuleRegistry, ModuleB: ModuleRegistry): number =>
+      ...thirdPartyModules.sort((moduleA: ModuleRegistry, ModuleB: ModuleRegistry): number =>
         moduleA.location.replace(/^.*(\\|\/|\:)/, '') > ModuleB.location.replace(/^.*(\\|\/|\:)/, '') ? 1 : -1
       ),
       ...modules
@@ -101,11 +104,11 @@ export default class ExpressApp extends EventEmitter {
   }
 
   private async loadControllers(): Promise<void> {
-    // Trigger portential third party controllers
-    await getNamespace(NAMESAPCE, './node_modules', 'controller')
+    // Trigger potential third party controllers
+    await getNamespace(NAMESPACE, './node_modules', 'controller')
 
     // And now our apps controllers
-    const namespaceRegistry = await getNamespace(NAMESAPCE, this.options.appLocation, 'controller')
+    const namespaceRegistry = await getNamespace(NAMESPACE, this.options.appLocation, 'controller')
 
     if (namespaceRegistry) {
       const erroredModule = namespaceRegistry.importedModules.find((module: ModuleRegistry): boolean => !!module.error)
@@ -119,11 +122,11 @@ export default class ExpressApp extends EventEmitter {
       if (notRegisteredClass)
         throw new Error(`Class ${notRegisteredClass.name} make use of decorators but hasn't been registered with @Controller or @Middleware\n${notRegisteredClass.location}`)
 
-      const dobbleRegisteredClass = namespaceRegistry.classes.find((classRegistry: ClassRegistry): boolean => {
+      const doubleRegisteredClass = namespaceRegistry.classes.find((classRegistry: ClassRegistry): boolean => {
         return classRegistry.decorations.filter((decoration: Decoration): boolean => decoration.__type === 'controller' || decoration.__type === 'middleware').length > 1
       })
-      if (dobbleRegisteredClass)
-        throw new Error(`Class ${dobbleRegisteredClass.name} class has been registred with multiple @Controller and/or @Middleware what?\n${dobbleRegisteredClass.location}`)
+      if (doubleRegisteredClass)
+        throw new Error(`Class ${doubleRegisteredClass.name} class has been registered with multiple @Controller and/or @Middleware what?\n${doubleRegisteredClass.location}`)
       /// Edge cases -------------------------------
 
       const middlewareClassRegistries = namespaceRegistry.classes.filter(
@@ -148,7 +151,7 @@ export default class ExpressApp extends EventEmitter {
         for (let j = 0; j < controllerUseDecorations.length; j++) {
           const currentControllerUseDecoration = controllerUseDecorations[j]
           const middlewareClassRegistry = middlewareClassRegistries.find((registry: ClassRegistry): boolean => registry.target === currentControllerUseDecoration.middleware)
-          const middlewareMethodRegistry = middlewareClassRegistry?.methods.find((methodRegisry: MethodRegistry): boolean => methodRegisry.propertyKey === 'middleware')
+          const middlewareMethodRegistry = middlewareClassRegistry?.methods.find((methodRegistry: MethodRegistry): boolean => methodRegistry.propertyKey === 'middleware')
 
           router.use(this.generateMiddlewareHandler(currentControllerUseDecoration.middleware, currentControllerUseDecoration.options, middlewareMethodRegistry))
         }
@@ -163,11 +166,11 @@ export default class ExpressApp extends EventEmitter {
           const route = `/${actionDecoration.path || ''}`.replace(/\/+/g, '/').replace(/(.+)\/$/, '$1')
           const actionHandlers: RequestHandler[] = []
 
-          // We prepare all middleware handlers that will process request befire this particular action
+          // We prepare all middleware handlers that will process request before this particular action
           for (let k = 0; k < actionUseDecorations.length; k++) {
             const currentActionUseDecorations = actionUseDecorations[k]
             const middlewareClassRegistry = middlewareClassRegistries.find((registry: ClassRegistry): boolean => registry.target === currentActionUseDecorations.middleware)
-            const middlewareMethodRegistry = middlewareClassRegistry?.methods.find((methodRegisry: MethodRegistry): boolean => methodRegisry.propertyKey === 'middleware')
+            const middlewareMethodRegistry = middlewareClassRegistry?.methods.find((methodRegistry: MethodRegistry): boolean => methodRegistry.propertyKey === 'middleware')
 
             actionHandlers.push(this.generateMiddlewareHandler(currentActionUseDecorations.middleware, currentActionUseDecorations.options, middlewareMethodRegistry))
           }
@@ -180,7 +183,7 @@ export default class ExpressApp extends EventEmitter {
           // And now the last is the actual action handler
           actionHandlers.push(this.generateActionHandler(currentMethodRegistry, currentClassRegistry.target))
 
-          // And set the ruouter middlewares and action for this route
+          // And set the router middleware and action for this route
           router[actionDecoration.method.toLocaleLowerCase()](route, actionHandlers)
         }
 
@@ -219,17 +222,17 @@ export default class ExpressApp extends EventEmitter {
     }
   }
 
-  private generateActionHandler(methodRegisry: MethodRegistry, target: ClassType): RequestHandler {
+  private generateActionHandler(methodRegistry: MethodRegistry, target: ClassType): RequestHandler {
     return async (request: Request, response: Response, next: NextFunction): Promise<any> => {
       const requestContext = request['requestContext'] as RequestContext
       try {
-        const handler = `${target.name}#${methodRegisry.propertyKey}`
+        const handler = `${target.name}#${methodRegistry.propertyKey}`
         request['requestContext']['handler'] = handler
         this.emit('request/handler', { event: 'request/handler', handler, request })
         const controllerInstance = new target(request, response)
-        const args = this.generateActionArgs(methodRegisry, request, response)
+        const args = this.generateActionArgs(methodRegistry, request, response)
 
-        await controllerInstance[methodRegisry.propertyKey](...args)
+        await controllerInstance[methodRegistry.propertyKey](...args)
 
         response.end()
 
@@ -240,13 +243,13 @@ export default class ExpressApp extends EventEmitter {
     }
   }
 
-  private generateActionArgs(methodRegisry: MethodRegistry, request: Request, response: Response, middlewareOptions?: any): any[] {
-    const numberOfArguments = methodRegisry.arguments[0] ? methodRegisry.arguments[0].index + 1 : 0
+  private generateActionArgs(methodRegistry: MethodRegistry, request: Request, response: Response, middlewareOptions?: any): any[] {
+    const numberOfArguments = methodRegistry.arguments[0] ? methodRegistry.arguments[0].index + 1 : 0
 
     const finalArgs = new Array(numberOfArguments)
 
-    for (let i = 0; i < methodRegisry.arguments.length; i++) {
-      const currentArgumentRegistry = methodRegisry.arguments[i]
+    for (let i = 0; i < methodRegistry.arguments.length; i++) {
+      const currentArgumentRegistry = methodRegistry.arguments[i]
       const decoration = currentArgumentRegistry.decorations[0] as ArgumentDecoration
 
       switch (decoration.__type) {
