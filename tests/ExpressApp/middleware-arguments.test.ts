@@ -16,6 +16,9 @@ describe('ExpressApp', (): void => {
 
     let response = await fetch(`http://localhost:${port}/good?id=888`)
     expect(response.status).toBe(200)
-    expect(await response.json()).toEqual({ controllerMiddleware: true, options: { controller: 'yes' }, query: { id: '888' } })
+    expect(await response.json()).toEqual({
+      general: { generalMiddleware: true, query: { id: '888' }, options: {} },
+      controller: { controllerMiddleware: true, options: { controller: 'yes' }, query: { id: '888' } }
+    })
   })
 })

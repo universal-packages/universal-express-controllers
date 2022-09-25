@@ -1,5 +1,5 @@
 import { loadModules, ModuleRegistry } from '@universal-packages/module-loader'
-import { ClassRegistry, ClassType, Decoration, getNamespace, MethodRegistry } from '@universal-packages/namespaced-decorators'
+import { ClassRegistry, ClassType, Decoration, getNamespace, MethodRegistry, NamespaceRegistry } from '@universal-packages/namespaced-decorators'
 import { startMeasurement } from '@universal-packages/time-measurer'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
@@ -25,6 +25,11 @@ export default class ExpressApp extends EventEmitter {
   public readonly expressApp: Express
   public readonly httpServer: http.Server
 
+  private namespaceRegistry: NamespaceRegistry
+  private controllerModules: ModuleRegistry[]
+  private middlewareModules: ModuleRegistry[]
+  private allModules: ModuleRegistry[]
+
   public constructor(options: ExpressAppOptions) {
     super()
     this.options = { bodyParser: 'json', ...options }
@@ -34,6 +39,7 @@ export default class ExpressApp extends EventEmitter {
 
   public async prepare(): Promise<void> {
     await this.applyPreMiddleware()
+    await this.loadNamespaceRegistry()
     await this.loadMiddleware()
     await this.loadControllers()
     await this.applyPostMiddleware()
@@ -87,53 +93,62 @@ export default class ExpressApp extends EventEmitter {
     })
   }
 
-  private async loadMiddleware(): Promise<void> {
-    const thirdPartyModules = await loadModules(this.options.appLocation, { conventionPrefix: 'universal-core-express-middleware' })
-    const modules = await loadModules(this.options.appLocation, { conventionPrefix: 'middleware' })
-    const finalModules = [
-      ...thirdPartyModules.sort((moduleA: ModuleRegistry, ModuleB: ModuleRegistry): number =>
-        moduleA.location.replace(/^.*(\\|\/|\:)/, '') > ModuleB.location.replace(/^.*(\\|\/|\:)/, '') ? 1 : -1
-      ),
-      ...modules
-    ]
+  private async loadNamespaceRegistry(): Promise<void> {
+    const thirdPartyMiddlewareModules = await loadModules('./node_modules', { conventionPrefix: 'universal-core-express-middleware' })
+    const middlewareModules = await loadModules(this.options.appLocation, { conventionPrefix: 'middleware' })
+    this.middlewareModules = [...thirdPartyMiddlewareModules, ...middlewareModules]
 
-    for (let i = 0; i < finalModules.length; i++) {
-      const currentModule = finalModules[i]
-      this.expressApp.use(this.generateMiddlewareHandler(currentModule.exports))
+    const thirdPartyControllerModules = await loadModules('./node_modules', { conventionPrefix: 'universal-core-express-controller' })
+    const controllerModules = await loadModules(this.options.appLocation, { conventionPrefix: 'controller' })
+    this.controllerModules = [...thirdPartyControllerModules, ...controllerModules]
+
+    this.allModules = [...this.middlewareModules, ...this.controllerModules]
+
+    const erroredModule = this.allModules.find((module: ModuleRegistry): boolean => !!module.error)
+    if (erroredModule) throw erroredModule.error
+
+    const noDefaultExportModule = this.allModules.find((module: ModuleRegistry): boolean => !module.exports)
+    if (noDefaultExportModule) throw new Error(`No default export for module\n${noDefaultExportModule.location}`)
+
+    this.namespaceRegistry = await getNamespace(NAMESPACE, this.allModules)
+  }
+
+  private async loadMiddleware(): Promise<void> {
+    const middlewareClassRegistries = this.namespaceRegistry.classes.filter(
+      (classRegistry: ClassRegistry): boolean => !!classRegistry.decorations.find((decoration: MiddlewareDecoration): boolean => decoration.__type === 'middleware')
+    )
+
+    for (let i = 0; i < this.middlewareModules.length; i++) {
+      const currentModule = this.middlewareModules[i]
+      const middlewareClassRegistry = middlewareClassRegistries.find((registry: ClassRegistry): boolean => registry.target === currentModule.exports)
+      const middlewareMethodRegistry = middlewareClassRegistry?.methods.find((methodRegistry: MethodRegistry): boolean => methodRegistry.propertyKey === 'middleware')
+
+      this.expressApp.use(this.generateMiddlewareHandler(currentModule.exports, {}, middlewareMethodRegistry))
     }
   }
 
   private async loadControllers(): Promise<void> {
-    // Trigger potential third party controllers
-    await getNamespace(NAMESPACE, './node_modules', 'controller')
-
-    // And now our apps controllers
-    const namespaceRegistry = await getNamespace(NAMESPACE, this.options.appLocation, 'controller')
-
-    if (namespaceRegistry) {
-      const erroredModule = namespaceRegistry.importedModules.find((module: ModuleRegistry): boolean => !!module.error)
-      if (erroredModule) throw erroredModule.error
-
+    if (this.namespaceRegistry) {
       /// Edge cases -------------------------------
-      const notRegisteredClass = namespaceRegistry.classes.find(
+      const notRegisteredClass = this.namespaceRegistry.classes.find(
         (classRegistry: ClassRegistry): boolean =>
           classRegistry.decorations.filter((decoration: Decoration): boolean => decoration.__type === 'controller' || decoration.__type === 'middleware').length === 0
       )
       if (notRegisteredClass)
         throw new Error(`Class ${notRegisteredClass.name} make use of decorators but hasn't been registered with @Controller or @Middleware\n${notRegisteredClass.location}`)
 
-      const doubleRegisteredClass = namespaceRegistry.classes.find((classRegistry: ClassRegistry): boolean => {
+      const doubleRegisteredClass = this.namespaceRegistry.classes.find((classRegistry: ClassRegistry): boolean => {
         return classRegistry.decorations.filter((decoration: Decoration): boolean => decoration.__type === 'controller' || decoration.__type === 'middleware').length > 1
       })
       if (doubleRegisteredClass)
         throw new Error(`Class ${doubleRegisteredClass.name} class has been registered with multiple @Controller and/or @Middleware what?\n${doubleRegisteredClass.location}`)
       /// Edge cases -------------------------------
 
-      const middlewareClassRegistries = namespaceRegistry.classes.filter(
+      const middlewareClassRegistries = this.namespaceRegistry.classes.filter(
         (classRegistry: ClassRegistry): boolean => !!classRegistry.decorations.find((decoration: MiddlewareDecoration): boolean => decoration.__type === 'middleware')
       )
 
-      const controllerClassesRegistries = namespaceRegistry.classes.filter(
+      const controllerClassesRegistries = this.namespaceRegistry.classes.filter(
         (classRegistry: ClassRegistry): boolean => !!classRegistry.decorations.find((decoration: ControllerDecoration): boolean => decoration.__type === 'controller')
       )
 
