@@ -1,8 +1,8 @@
 import { Decoration } from '@universal-packages/namespaced-decorators'
-import { Middleware } from './ExpressApp.types'
+import { MiddlewareLike } from './ExpressApp.types'
 
 export interface ControllerUseDecoration<O = any> extends Decoration {
   __type: 'controller-use'
-  middleware: Middleware
+  middleware: MiddlewareLike
   options?: O
 }

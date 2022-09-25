@@ -16,7 +16,7 @@ import { ArgumentDecoration } from './Argument.types'
 import BaseMiddleware from './BaseMiddleware'
 import { ControllerDecoration } from './Controller.types'
 import { ControllerUseDecoration } from './ControllerUse.types'
-import { BodyParser, ExpressAppOptions, Middleware, RequestContext } from './ExpressApp.types'
+import { BodyParser, ExpressAppOptions, MiddlewareLike, RequestContext } from './ExpressApp.types'
 import { NAMESPACE } from './namespace'
 import { MiddlewareDecoration } from './Middleware.types'
 
@@ -196,7 +196,7 @@ export default class ExpressApp extends EventEmitter {
     }
   }
 
-  private generateMiddlewareHandler(middleware: Middleware, options?: Record<string, any>, middlewareMethodRegistry?: MethodRegistry): RequestHandler {
+  private generateMiddlewareHandler(middleware: MiddlewareLike, options?: Record<string, any>, middlewareMethodRegistry?: MethodRegistry): RequestHandler {
     if (middleware.prototype) {
       return async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         this.emit('request/middleware', { event: 'request/middleware', name: middleware.name })
