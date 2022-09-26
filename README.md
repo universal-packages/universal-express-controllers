@@ -363,11 +363,11 @@ export default function top(request, response, next) {
 
 ```js
 expressApp.on('request/start', ({ request }) => console.log(request))
-expressApp.on('request/not-found', ({ request, measurement }) => console.log(request, measurement))
-expressApp.on('request/error', ({ error, request, measurement }) => console.log(error, request, measurement))
+expressApp.on('request/not-found', ({ request, response, measurement }) => console.log(request, response, measurement))
+expressApp.on('request/error', ({ error, request, response, measurement }) => console.log(error, request, response, measurement))
 expressApp.on('request/middleware', ({ name }) => console.log(name))
 expressApp.on('request/handler', ({ request, handler }) => console.log(request, handler))
-expressApp.on('request/end', ({ request, handler, measurement }) => console.log(request, handler, measurement))
+expressApp.on('request/end', ({ request, response, handler, measurement }) => console.log(request, response, handler, measurement))
 ```
 
 ## Typescript

@@ -73,7 +73,7 @@ describe('ExpressApp', (): void => {
     // IF CHANGING EVENTS PRINT THEM USING THIS MF
     // console.log(
     //   JSON.stringify(eventListener.mock.calls, (key, value) => {
-    //     if (['request', 'measurement'].includes(key)) return undefined
+    //     if (['request', 'response', 'measurement'].includes(key)) return undefined
     //     return value
     //   })
     // )

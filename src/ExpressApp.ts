@@ -79,14 +79,14 @@ export default class ExpressApp extends EventEmitter {
     this.expressApp.use((request: Request, response: Response, next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
       response.statusCode = StatusCodes.NOT_FOUND
-      this.emit('request/not-found', { event: 'request/not-found', request, measurement: requestContext.requestMeasurer.finish() })
+      this.emit('request/not-found', { event: 'request/not-found', request, response, measurement: requestContext.requestMeasurer.finish() })
       response.end()
     })
 
     this.expressApp.use((error: Error, request: Request, response: Response, _next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
       response.status(StatusCodes.INTERNAL_SERVER_ERROR)
-      this.emit('request/error', { event: 'request/error', error, handler: requestContext.handler, request, measurement: requestContext.requestMeasurer.finish() })
+      this.emit('request/error', { event: 'request/error', error, handler: requestContext.handler, request, response, measurement: requestContext.requestMeasurer.finish() })
       response.end()
     })
   }
@@ -221,7 +221,7 @@ export default class ExpressApp extends EventEmitter {
 
           if (response.writableEnded) {
             const requestContext = request['requestContext'] as RequestContext
-            this.emit('request/end', { event: 'request/end', handler: middleware.name, measurement: requestContext.requestMeasurer.finish(), request })
+            this.emit('request/end', { event: 'request/end', handler: middleware.name, measurement: requestContext.requestMeasurer.finish(), request, response })
           } else {
             next()
           }
@@ -256,7 +256,7 @@ export default class ExpressApp extends EventEmitter {
 
         response.end()
 
-        this.emit('request/end', { event: 'request/end', handler, measurement: requestContext.requestMeasurer.finish(), request })
+        this.emit('request/end', { event: 'request/end', handler, measurement: requestContext.requestMeasurer.finish(), request, response })
       } catch (error) {
         next(error)
       }
