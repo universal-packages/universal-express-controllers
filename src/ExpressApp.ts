@@ -218,8 +218,10 @@ export default class ExpressApp extends EventEmitter {
         try {
           const middlewareInstance = new (middleware as typeof BaseMiddleware)(request, response, options)
           const args = middlewareMethodRegistry ? this.generateActionArgs(middlewareMethodRegistry, request, response, options) : []
+
           await middlewareInstance.middleware(...args)
-          next()
+
+          if (!response.writableEnded) next()
         } catch (error) {
           next(error)
         }
