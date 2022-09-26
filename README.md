@@ -281,6 +281,20 @@ export default class AuthMiddleware extends BaseMiddleware {
 }
 ```
 
+### Ending responses
+
+When using class middleware if the middleware ends the equest, the `next()` chain is broken automatically and the request will not reach further more.
+
+```js
+import { BaseMiddleware } from '@universal-packages/express-controllers'
+
+export default class AuthorizationMiddleware extends BaseMiddleware {
+  async middleware() {
+    this.status('UNAUTHORIZED').end()
+  }
+}
+```
+
 ### @Middleware()
 
 Registers a class to behave as a middleware. To be able to access `this.request` and `this.response` and `this.options` inside your middleware action you can extend your controller with the `BaseMiddleware`, is not necessary but useful to access those object that way instead of using `Argument Decorators`.

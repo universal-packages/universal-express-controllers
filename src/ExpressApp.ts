@@ -9,7 +9,6 @@ import getPort from 'get-port'
 import helmet from 'helmet'
 import http from 'http'
 import { StatusCodes } from 'http-status-codes'
-import { HttpError } from 'http-errors'
 import { ActionDecoration } from './Action.types'
 import { ActionUseDecoration } from './ActionUse.types'
 import { ArgumentDecoration } from './Argument.types'
@@ -84,10 +83,9 @@ export default class ExpressApp extends EventEmitter {
       response.end()
     })
 
-    this.expressApp.use((error: HttpError, request: Request, response: Response, _next: NextFunction): void => {
+    this.expressApp.use((error: Error, request: Request, response: Response, _next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
-      error.status = error.status || StatusCodes.INTERNAL_SERVER_ERROR
-      response.status(error.status)
+      response.status(StatusCodes.INTERNAL_SERVER_ERROR)
       this.emit('request/error', { event: 'request/error', error, handler: requestContext.handler, request, measurement: requestContext.requestMeasurer.finish() })
       response.end()
     })
@@ -221,7 +219,12 @@ export default class ExpressApp extends EventEmitter {
 
           await middlewareInstance.middleware(...args)
 
-          if (!response.writableEnded) next()
+          if (response.writableEnded) {
+            const requestContext = request['requestContext'] as RequestContext
+            this.emit('request/end', { event: 'request/end', handler: middleware.name, measurement: requestContext.requestMeasurer.finish(), request })
+          } else {
+            next()
+          }
         } catch (error) {
           next(error)
         }
