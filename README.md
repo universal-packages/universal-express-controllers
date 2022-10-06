@@ -46,8 +46,12 @@ await expressApp.stop()
   What body parser use across the app
 - **`cors`** `CorsOptions | true`
   Enable cors for this app, optionally passing [CorsOptions](https://expressjs.com/en/resources/middleware/cors.html)
+- **`cookieParser`** `CookieParseOptions | true`
+  Enable cookie parser for this app, optionally passing [CookieParseOptions](https://www.npmjs.com/package/cookie-parser)
 - **`helmet`** `HelmetOptions | true`
   Enable helmet for this app, optionally passing [HelmetOptions](https://helmetjs.github.io/)
+- **`viewEngine`** `String`
+  Sets the view renderer ([template engines](http://expressjs.com/en/guide/using-template-engines.html))
 
 ## BaseController
 

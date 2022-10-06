@@ -71,7 +71,13 @@ export default class ExpressApp extends EventEmitter {
 
     if (this.options.helmet) this.expressApp.use(helmet(this.options.helmet === true ? {} : this.options.helmet))
     if (this.options.cors) this.expressApp.use(cors(this.options.cors === true ? {} : this.options.cors))
-    if (this.options.cookieParser) this.expressApp.use(cookieParser(this.options.cookieParser === true ? undefined : this.options.cookieParser.secret))
+    if (this.options.cookieParser)
+      this.expressApp.use(
+        cookieParser(
+          this.options.cookieParser === true ? undefined : this.options.cookieParser.secret,
+          this.options.cookieParser === true ? undefined : this.options.cookieParser.options
+        )
+      )
     if (this.options.viewEngine) this.expressApp.set('view engine', this.options.viewEngine)
   }
 

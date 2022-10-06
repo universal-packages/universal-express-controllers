@@ -1,4 +1,5 @@
 import { TimeMeasurer } from '@universal-packages/time-measurer'
+import { CookieParseOptions } from 'cookie-parser'
 import { CorsOptions } from 'cors'
 import { RequestHandler } from 'express'
 import { HelmetOptions } from 'helmet'
@@ -12,7 +13,7 @@ export type MiddlewareLike = typeof BaseMiddleware | RequestHandler
 export interface ExpressAppOptions extends ListenOptions {
   appLocation: string
   bodyParser?: BodyParser | BodyParser[]
-  cookieParser?: { secret: string } | true
+  cookieParser?: { secret?: string; options: CookieParseOptions } | true
   cors?: CorsOptions | true
   helmet?: HelmetOptions | true
   viewEngine?: string | 'pug'
