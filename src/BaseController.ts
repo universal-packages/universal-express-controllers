@@ -1,11 +1,11 @@
 import { CookieOptions, Request, Response } from 'express'
 import { StatusCodes } from 'http-status-codes'
 
-export default class BaseController {
-  protected readonly request: Request
+export default class BaseController<R = Request> {
+  protected readonly request: R
   protected readonly response: Response
 
-  public constructor(request: Request, response: Response) {
+  public constructor(request: R, response: Response) {
     this.request = request
     this.response = response
   }
