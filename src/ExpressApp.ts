@@ -236,7 +236,7 @@ export default class ExpressApp extends EventEmitter {
   }
 
   private generateMiddlewareHandler(middleware: MiddlewareLike, options?: Record<string, any>, middlewareMethodRegistry?: MethodRegistry): RequestHandler {
-    if (middleware.prototype) {
+    if (/^\s*class\s+/.test(middleware.toString())) {
       return async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         this.emit('request/middleware', { event: 'request/middleware', name: middleware.name })
         try {
