@@ -259,7 +259,7 @@ export default class ExpressApp extends EventEmitter {
       return async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         try {
           const functionName = /function\s+([\w\$]+)\s*\(/.exec(middleware.toString())
-          this.emit('request/middleware', { event: 'request/middleware', name: functionName[1] })
+          this.emit('request/middleware', { event: 'request/middleware', name: functionName ? functionName[1] : 'anonymous' })
           await (middleware as RequestHandler)(request, response, next)
         } catch (error) {
           next(error)
