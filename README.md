@@ -320,7 +320,7 @@ export default class AuthMiddleware extends BaseMiddleware {
 
 ### Middleware Arguments Decorators
 
-Middleware actions can use all the `Argument Decorators` plus one more to access middleware options
+Middleware actions can use all the `Argument Decorators` plus one more to access middleware options.
 
 - **`@MiddlewareOptions()`**
   Gets the options passed to this middleware through `@ControllerUse()` or `@ActionUse()`
@@ -338,7 +338,7 @@ Middleware actions can use all the `Argument Decorators` plus one more to access
 
 ## Global middleware
 
-In order to apply middleware to the whole app, you need to prepend your middleware files with `.middleware` all files in your project that will be loaded and added to the express app before starting building it with controller actions and other middleware.
+In order to apply middleware to the whole app globally, you need to prefix your middleware files with `.middleware`.
 
 Recommended structure:
 
@@ -348,6 +348,21 @@ Recommended structure:
     |_ TopLevel.middleware.js|ts
     |_ top.middleware.js|ts
   |_ controllers
+```
+
+By default global middleware is applied to the express app as any other to level middleware like `cors` or `helmet` but you can configure your global middleware to run individually alongside each action by defining the static property `strategy` to `each`. Then the middleware will run just after the body parser is applied and before the controller an action middleware.
+
+```js
+@Middleware()
+export default class AuthMiddleware extends BaseMiddleware {
+  public static readonly strategy = 'each' // default 'global'
+
+  async middleware(@Request() request, @MiddlewareOptions() options) {
+    if (options.sometimes && Math.random() > 0.5) {
+      if (!request['user']) throw createHttpError(StatusCodes.UNAUTHORIZED)
+    }
+  }
+}
 ```
 
 ## Middleware as functions
@@ -360,6 +375,8 @@ export default function top(request, response, next) {
   next()
 }
 ```
+
+> Global middleware as function will always run globally and can not be configured to run alongside actions.
 
 ## Events
 

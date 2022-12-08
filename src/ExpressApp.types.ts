@@ -9,6 +9,7 @@ import BaseMiddleware from './BaseMiddleware'
 export type HTTPVerb = 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT'
 export type BodyParser = 'json' | 'raw' | 'text' | 'urlencoded'
 export type MiddlewareLike = typeof BaseMiddleware | RequestHandler
+export type MiddlewareStrategy = 'each' | 'global'
 
 export interface ExpressAppOptions extends ListenOptions {
   appLocation: string

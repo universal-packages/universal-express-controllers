@@ -11,6 +11,6 @@ describe('ExpressApp', (): void => {
       error = err
     }
 
-    expect(error).toEqual('Bad file')
+    expect(error.message).toEqual('Bad file')
   })
 })

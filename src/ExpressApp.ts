@@ -29,6 +29,8 @@ export default class ExpressApp extends EventEmitter {
   private middlewareModules: ModuleRegistry[]
   private allModules: ModuleRegistry[]
 
+  private eachMiddleware: { middleware: MiddlewareLike; methodRegistry: MethodRegistry }[] = []
+
   public constructor(options: ExpressAppOptions) {
     super()
     this.options = { bodyParser: 'json', ...options }
@@ -109,7 +111,13 @@ export default class ExpressApp extends EventEmitter {
     this.allModules = [...this.middlewareModules, ...this.controllerModules]
 
     const erroredModule = this.allModules.find((module: ModuleRegistry): boolean => !!module.error)
-    if (erroredModule) throw erroredModule.error
+    if (erroredModule) {
+      if (erroredModule.error instanceof Error) {
+        throw erroredModule.error
+      } else {
+        throw new Error(erroredModule.error as any)
+      }
+    }
 
     const noDefaultExportModule = this.allModules.find((module: ModuleRegistry): boolean => !module.exports)
     if (noDefaultExportModule) throw new Error(`No default export for module\n${noDefaultExportModule.location}`)
@@ -127,7 +135,12 @@ export default class ExpressApp extends EventEmitter {
       const middlewareClassRegistry = middlewareClassRegistries.find((registry: ClassRegistry): boolean => registry.target === currentModule.exports)
       const middlewareMethodRegistry = middlewareClassRegistry?.methods.find((methodRegistry: MethodRegistry): boolean => methodRegistry.propertyKey === 'middleware')
 
-      this.expressApp.use(this.generateMiddlewareHandler(currentModule.exports, {}, middlewareMethodRegistry))
+      // We preserve middle ware that needs to be used per route handler
+      if (currentModule.exports.strategy === 'each') {
+        this.eachMiddleware.push({ middleware: currentModule.exports, methodRegistry: middlewareMethodRegistry })
+      } else {
+        this.expressApp.use(this.generateMiddlewareHandler(currentModule.exports, {}, middlewareMethodRegistry))
+      }
     }
   }
 
@@ -185,6 +198,18 @@ export default class ExpressApp extends EventEmitter {
           const route = `/${actionDecoration.path || ''}`.replace(/\/+/g, '/').replace(/(.+)\/$/, '$1')
           const actionHandlers: RequestHandler[] = []
 
+          // Just before the action and middleware process the request the body parser will parse the body for this particular request
+          const parsers = [].concat(actionDecoration.options?.bodyParser || controllerDecoration.options?.bodyParser || this.options.bodyParser)
+          const finalBodyParsers = parsers.map((parser: BodyParser): RequestHandler => express[parser]())
+          actionHandlers.push(...finalBodyParsers)
+
+          // We set the global middleware configured to run for each action handler and not globally
+          for (let k = 0; k < this.eachMiddleware.length; k++) {
+            const currentEachMiddleware = this.eachMiddleware[k]
+
+            actionHandlers.push(this.generateMiddlewareHandler(currentEachMiddleware.middleware, {}, currentEachMiddleware.methodRegistry))
+          }
+
           // We prepare all middleware handlers that will process request before this particular action
           for (let k = 0; k < actionUseDecorations.length; k++) {
             const currentActionUseDecorations = actionUseDecorations[k]
@@ -193,11 +218,6 @@ export default class ExpressApp extends EventEmitter {
 
             actionHandlers.push(this.generateMiddlewareHandler(currentActionUseDecorations.middleware, currentActionUseDecorations.options, middlewareMethodRegistry))
           }
-
-          // Just before the action process the request the body parser will parse the body for this particular request
-          const parsers = [].concat(actionDecoration.options?.bodyParser || controllerDecoration.options?.bodyParser || this.options.bodyParser)
-          const finalBodyParsers = parsers.map((parser: BodyParser): RequestHandler => express[parser]())
-          actionHandlers.push(...finalBodyParsers)
 
           // And now the last is the actual action handler
           actionHandlers.push(this.generateActionHandler(currentMethodRegistry, currentClassRegistry.target))

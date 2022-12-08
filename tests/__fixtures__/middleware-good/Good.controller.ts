@@ -10,7 +10,7 @@ import ControllerMiddlewareB from './ControllerMiddlewareB'
 @ControllerUse(ControllerMiddlewareA, { middle: 'c-a' })
 @ControllerUse(ControllerMiddlewareB, { middle: 'c-b' })
 export default class GoodController extends BaseController {
-  @Get()
+  @Get(':id')
   @ActionUse(ActionMiddlewareA, { middle: 'a-a' })
   @ActionUse(ActionMiddlewareB, { middle: 'a-b' })
   public async getEnd(): Promise<void> {
