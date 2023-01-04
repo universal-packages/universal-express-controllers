@@ -100,11 +100,11 @@ export default class ExpressApp extends EventEmitter {
   }
 
   private async loadNamespaceRegistry(): Promise<void> {
-    const thirdPartyMiddlewareModules = await loadModules('./node_modules', { conventionPrefix: 'universal-core-express-middleware' })
+    const thirdPartyMiddlewareModules = await loadModules('./node_modules', { conventionPrefix: 'universal-express-middleware' })
     const middlewareModules = await loadModules(this.options.appLocation, { conventionPrefix: 'middleware' })
     this.middlewareModules = [...thirdPartyMiddlewareModules, ...middlewareModules]
 
-    const thirdPartyControllerModules = await loadModules('./node_modules', { conventionPrefix: 'universal-core-express-controller' })
+    const thirdPartyControllerModules = await loadModules('./node_modules', { conventionPrefix: 'universal-express-controller' })
     const controllerModules = await loadModules(this.options.appLocation, { conventionPrefix: 'controller' })
     this.controllerModules = [...thirdPartyControllerModules, ...controllerModules]
 
