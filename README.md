@@ -72,7 +72,7 @@ export default class AuthController extends BaseController {
 
 Decorate your controller classes to enable them to respond to requests.
 
-### @Controller()
+#### **`@Controller([path: string, options])`**
 
 Registers a class to behave as a controller. To be able to access `this.request` and `this.response` inside your controller actions you can extend your controller with the `BaseController`, it is not necessary but useful to access those object that way instead of using `Argument Decorators`.
 
@@ -93,7 +93,7 @@ import { BaseController, Controller } from '@universal-packages/express-controll
 export default class AuthController extends BaseController {}
 ```
 
-### @ControllerUse()
+#### **`@ControllerUse(middleware, [options])`**
 
 Enables a middleware to execute before all controller actions.
 
@@ -113,7 +113,7 @@ import RoleMiddleware from './RoleMiddleware'
 export default class AuthController extends BaseController {}
 ```
 
-### @Action()
+#### **`@Action(method: HTTPVerb, path: string, [options])`**
 
 Enables a controller instance method to be called when the route matches.
 
@@ -155,11 +155,11 @@ export default class AuthController extends BaseController {
 
 The following decorators behave the same as `@Action` the only difference is that they don't take the first argument since the decorator name describe the action method itself.
 
-- **`@Delete()`**
-- **`@Head()`**
-- **`@Patch()`**
-- **`@Post()`**
-- **`@Put()`**
+- **`@Delete(path: string, [options])`**
+- **`@Head(path: string, [options])`**
+- **`@Patch(path: string, [options])`**
+- **`@Post(path: string, [options])`**
+- **`@Put(path: string, [options])`**
 
 ```js
 import { BaseController, Controller, Get, Post } from '@universal-packages/express-controllers'
@@ -185,7 +185,7 @@ export default class AuthController extends BaseController {
 }
 ```
 
-### @ActionUse()
+#### **`@ActionUse(middleware: Middleware, [options])`**
 
 Enables a middleware to execute before a specific action.
 
@@ -221,7 +221,7 @@ You can simplify the code inside your actions by using argument decorators to ge
     this.response.json({ body })
   }
   ```
-- **`@Header(name)`**
+- **`@Header(name:string)`**
   Gets a specific header form the request header.
   ```js
   async login(@Header('Authentication') header) {
@@ -235,7 +235,7 @@ You can simplify the code inside your actions by using argument decorators to ge
     this.response.json({ headers })
   }
   ```
-- **`@Param()`**
+- **`@Param(name:string)`**
   Gets a specific param parsed for the request.
   ```js
   async login(@Param('id') id) {
@@ -264,7 +264,7 @@ You can simplify the code inside your actions by using argument decorators to ge
     response.json({ argument: 'yes', body })
   }
   ```
-- **`@Query()`**
+- **`@Query([name: string])`**
   Gets the whole query object or a specific property in it.
   ```js
   async login(@Query() query, @Query('ordered') ordered) {
@@ -300,7 +300,7 @@ export default class AuthorizationMiddleware extends BaseMiddleware {
 }
 ```
 
-### @Middleware()
+#### **`@Middleware()`**
 
 Registers a class to behave as a middleware. To be able to access `this.request` and `this.response` and `this.options` inside your middleware action you can extend your controller with the `BaseMiddleware`, is not necessary but useful to access those object that way instead of using `Argument Decorators`.
 
