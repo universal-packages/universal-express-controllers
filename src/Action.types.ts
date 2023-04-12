@@ -2,7 +2,7 @@ import { Decoration } from '@universal-packages/namespaced-decorators'
 import { BodyParser, HTTPVerb } from './ExpressApp.types'
 
 export interface ActionOptions {
-  bodyParser?: BodyParser | BodyParser[]
+  bodyParser?: BodyParser | BodyParser[] | 'none'
 }
 
 export interface ActionDecoration extends Decoration {

@@ -43,8 +43,8 @@ await expressApp.stop()
 
 - **`appLocation`** `String`
   Where should we look for controllers and middleware and load them?
-- **`bodyParser`** `'json' | 'raw' | 'text' | 'urlencoded' | ('json' | 'raw' | 'text' | 'urlencoded')[]` `default: json`
-  What body parser use across the app
+- **`bodyParser`** `'json' | 'raw' | 'text' | 'urlencoded' | 'none' | ('json' | 'raw' | 'text' | 'urlencoded')[]`
+  What body parser or body parsers use across the app
 - **`cors`** `CorsOptions | true`
   Enable cors for this app, optionally passing [CorsOptions](https://expressjs.com/en/resources/middleware/cors.html)
 - **`cookieParser`** `CookieParseOptions | true`
@@ -83,8 +83,8 @@ Registers a class to behave as a controller. To be able to access `this.request`
 - **`path`** `String` `default: /`
   This is the equivalent in pure express to: `app.use($path, router)`, internally you can see a controller as an express router object so this path will be prepended to all routes.
 - **`options`** `Map`
-  - **`bodyParser`** `'json' | 'raw' | 'text' | 'urlencoded' | ('json' | 'raw' | 'text' | 'urlencoded')[]` `default: json`
-    What body parser use across this particular controller
+  - **`bodyParser`** `'json' | 'raw' | 'text' | 'urlencoded' | 'none' | ('json' | 'raw' | 'text' | 'urlencoded')[]`
+    What body parser use across this particular controller, use `none` to disregard any body parser for this controller.
 
 ```js
 import { BaseController, Controller } from '@universal-packages/express-controllers'
@@ -124,8 +124,8 @@ Enables a controller instance method to be called when the route matches.
 - **`path`** `String`
   Path to match to call this instance method, ex: `/users` or `users/:id`
 - **`options`** `Map`
-  - **`bodyParser`** `'json' | 'raw' | 'text' | 'urlencoded' | ('json' | 'raw' | 'text' | 'urlencoded')[]` `default: json`
-    What body parser to use for this particular action.
+  - **`bodyParser`** `'json' | 'raw' | 'text' | 'urlencoded' | 'none' | ('json' | 'raw' | 'text' | 'urlencoded')[]` `default: json`
+    What body parser to use for this particular action, use `none` to disregard any body parser for this action.
 
 ```js
 import { Action, BaseController, Controller } from '@universal-packages/express-controllers'

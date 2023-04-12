@@ -33,7 +33,7 @@ export default class ExpressApp extends EventEmitter {
 
   public constructor(options: ExpressAppOptions) {
     super()
-    this.options = { bodyParser: 'json', ...options }
+    this.options = { ...options }
     this.expressApp = express()
     this.httpServer = http.createServer(this.expressApp)
   }
@@ -199,8 +199,10 @@ export default class ExpressApp extends EventEmitter {
           const actionHandlers: RequestHandler[] = []
 
           // Just before the action and middleware process the request the body parser will parse the body for this particular request
-          const parsers = [].concat(actionDecoration.options?.bodyParser || controllerDecoration.options?.bodyParser || this.options.bodyParser)
-          const finalBodyParsers = parsers.map((parser: BodyParser): RequestHandler => express[parser]())
+          const actionDecorationBodyParser = actionDecoration.options?.bodyParser === 'none' ? undefined : actionDecoration.options?.bodyParser
+          const controllerDecorationBodyParser = controllerDecoration.options?.bodyParser === 'none' ? undefined : controllerDecoration.options?.bodyParser
+          const bodyParsers = [].concat(actionDecorationBodyParser || controllerDecorationBodyParser || this.options.bodyParser).filter(Boolean)
+          const finalBodyParsers = bodyParsers.map((parser: BodyParser): RequestHandler => express[parser]())
           actionHandlers.push(...finalBodyParsers)
 
           // We set the global middleware configured to run for each action handler and not globally

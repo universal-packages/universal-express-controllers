@@ -1,6 +1,6 @@
 import { BaseController, Body, Controller, Get, Header, Headers, Param, Params, Post, Query, Req, Res } from '../../../src'
 
-@Controller('good')
+@Controller('good', { bodyParser: 'json' })
 export default class GoodController extends BaseController {
   @Post('body')
   public async getBody(@Body() body: any): Promise<void> {
