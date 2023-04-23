@@ -82,4 +82,8 @@ export default class BaseController {
 
     return this
   }
+
+  protected host(): string {
+    return this.request.protocol + '://' + this.request.get('host')
+  }
 }
