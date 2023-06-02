@@ -1,4 +1,5 @@
 import { ClassDecorator, ClassDecoratorFunction } from '@universal-packages/namespaced-decorators'
+
 import { MiddlewareDecoration } from './Middleware.types'
 import { NAMESPACE } from './namespace'
 

@@ -4,6 +4,7 @@ import { CorsOptions } from 'cors'
 import { RequestHandler } from 'express'
 import { HelmetOptions } from 'helmet'
 import { ListenOptions } from 'net'
+
 import BaseMiddleware from './BaseMiddleware'
 
 export type HTTPVerb = 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'POST' | 'PUT'

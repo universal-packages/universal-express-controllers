@@ -1,5 +1,5 @@
-import { loadModules, ModuleRegistry } from '@universal-packages/module-loader'
-import { ClassRegistry, ClassType, Decoration, getNamespace, MethodRegistry, NamespaceRegistry } from '@universal-packages/namespaced-decorators'
+import { ModuleRegistry, loadModules } from '@universal-packages/module-loader'
+import { ClassRegistry, ClassType, Decoration, MethodRegistry, NamespaceRegistry, getNamespace } from '@universal-packages/namespaced-decorators'
 import { startMeasurement } from '@universal-packages/time-measurer'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
@@ -9,6 +9,7 @@ import getPort from 'get-port'
 import helmet from 'helmet'
 import http from 'http'
 import { StatusCodes } from 'http-status-codes'
+
 import { ActionDecoration } from './Action.types'
 import { ActionUseDecoration } from './ActionUse.types'
 import { ArgumentDecoration } from './Argument.types'
@@ -16,8 +17,8 @@ import BaseMiddleware from './BaseMiddleware'
 import { ControllerDecoration } from './Controller.types'
 import { ControllerUseDecoration } from './ControllerUse.types'
 import { BodyParser, ExpressAppOptions, MiddlewareLike, RequestContext } from './ExpressApp.types'
-import { NAMESPACE } from './namespace'
 import { MiddlewareDecoration } from './Middleware.types'
+import { NAMESPACE } from './namespace'
 
 export default class ExpressApp extends EventEmitter {
   public readonly options: ExpressAppOptions

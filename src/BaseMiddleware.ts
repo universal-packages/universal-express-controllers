@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+
 import BaseController from './BaseController'
 import { MiddlewareStrategy } from './ExpressApp.types'
 

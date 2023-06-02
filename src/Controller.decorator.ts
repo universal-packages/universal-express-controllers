@@ -1,4 +1,5 @@
 import { ClassDecorator, ClassDecoratorFunction } from '@universal-packages/namespaced-decorators'
+
 import { ControllerDecoration, ControllerOptions } from './Controller.types'
 import { NAMESPACE } from './namespace'
 

@@ -1,4 +1,5 @@
 import { ArgumentDecorator, ParameterDecoratorFunction } from '@universal-packages/namespaced-decorators'
+
 import { ArgumentDecoration } from './Argument.types'
 import { NAMESPACE } from './namespace'
 

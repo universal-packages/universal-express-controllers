@@ -1,4 +1,5 @@
 import { MethodDecorator, MethodDecoratorFunction } from '@universal-packages/namespaced-decorators'
+
 import { ActionUseDecoration } from './ActionUse.types'
 import { MiddlewareLike } from './ExpressApp.types'
 import { NAMESPACE } from './namespace'
