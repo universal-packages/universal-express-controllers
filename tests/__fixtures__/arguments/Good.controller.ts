@@ -1,6 +1,6 @@
 import { BaseController, Body, Controller, Get, Header, Headers, Param, Params, Post, Query, Req, Res } from '../../../src'
 
-@Controller('good', { bodyParser: 'json' })
+@Controller('good/:cp', { bodyParser: 'json' })
 export default class GoodController extends BaseController {
   @Post('body')
   public async getBody(@Body() body: any): Promise<void> {
@@ -18,8 +18,8 @@ export default class GoodController extends BaseController {
   }
 
   @Get('param/:id')
-  public async getParam(@Param('id') param: any): Promise<void> {
-    this.response.json({ param })
+  public async getParam(@Param('id') param: any, @Param('cp') controllerParam: any): Promise<void> {
+    this.response.json({ param, controllerParam })
   }
 
   @Get('params/:id')

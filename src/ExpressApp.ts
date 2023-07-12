@@ -178,7 +178,8 @@ export default class ExpressApp extends EventEmitter {
         const controllerUseDecorations = currentClassRegistry.decorations.filter(
           (decoration: ControllerUseDecoration): boolean => decoration.__type === 'controller-use'
         ) as ControllerUseDecoration[]
-        const router = Router()
+        const controllerHandlers: RequestHandler[] = []
+        const controllerRoute = `/${controllerDecoration.path || ''}`.replace(/\/+/g, '/').replace(/(.+)\/$/, '$1')
 
         // Apply whole router level middleware
         for (let j = 0; j < controllerUseDecorations.length; j++) {
@@ -186,7 +187,7 @@ export default class ExpressApp extends EventEmitter {
           const middlewareClassRegistry = middlewareClassRegistries.find((registry: ClassRegistry): boolean => registry.target === currentControllerUseDecoration.middleware)
           const middlewareMethodRegistry = middlewareClassRegistry?.methods.find((methodRegistry: MethodRegistry): boolean => methodRegistry.propertyKey === 'middleware')
 
-          router.use(this.generateMiddlewareHandler(currentControllerUseDecoration.middleware, currentControllerUseDecoration.options, middlewareMethodRegistry))
+          controllerHandlers.push(this.generateMiddlewareHandler(currentControllerUseDecoration.middleware, currentControllerUseDecoration.options, middlewareMethodRegistry))
         }
 
         for (let j = 0; j < currentClassRegistry.methods.length; j++) {
@@ -225,13 +226,9 @@ export default class ExpressApp extends EventEmitter {
           // And now the last is the actual action handler
           actionHandlers.push(this.generateActionHandler(currentMethodRegistry, currentClassRegistry.target))
 
-          // And set the router middleware and action for this route
-          router[actionDecoration.method.toLocaleLowerCase()](route, actionHandlers)
+          // Join controller and action routes for a final route, apply all controller and action middleware
+          this.expressApp[actionDecoration.method.toLocaleLowerCase()](`${controllerRoute}${route}`, [...controllerHandlers, ...actionHandlers])
         }
-
-        // The router works only for the controller path
-        const routerNamespace = `/${controllerDecoration.path || ''}`.replace(/\/+/g, '/').replace(/(.+)\/$/, '$1')
-        this.expressApp.use(routerNamespace, router)
       }
     } else {
       this.emit('warning', 'No controllers have been found')
