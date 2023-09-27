@@ -9,7 +9,7 @@ afterEach(async (): Promise<void> => {
   await app.stop()
 })
 
-describe('ExpressApp', (): void => {
+describe(ExpressApp, (): void => {
   it('it ends the next change and emits the request ending', async (): Promise<void> => {
     const eventListener = jest.fn()
     app = new ExpressApp({ appLocation: './tests/__fixtures__/middleware-end-request', port })

@@ -9,7 +9,7 @@ afterEach(async (): Promise<void> => {
   await app.stop()
 })
 
-describe('ExpressApp', (): void => {
+describe(ExpressApp, (): void => {
   it('Enable action methods to map properties in a fancy decorated way', async (): Promise<void> => {
     app = new ExpressApp({ appLocation: './tests/__fixtures__/arguments', port })
     await app.prepare()

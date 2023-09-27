@@ -9,7 +9,7 @@ afterEach(async (): Promise<void> => {
   await app.stop()
 })
 
-describe('ExpressApp', (): void => {
+describe(ExpressApp, (): void => {
   it('Load controllers and builds an express app based on the controllers', async (): Promise<void> => {
     const eventListener = jest.fn()
     app = new ExpressApp({ appLocation: './tests/__fixtures__/all-good', port })

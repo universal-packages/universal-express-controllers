@@ -17,7 +17,7 @@ class TestController extends BaseController {
   }
 }
 
-describe('BaseController', (): void => {
+describe(BaseController, (): void => {
   it('Calls functions', async (): Promise<void> => {
     const response = {
       clearCookie: jest.fn(),

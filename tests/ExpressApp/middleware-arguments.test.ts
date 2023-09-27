@@ -9,7 +9,7 @@ afterEach(async (): Promise<void> => {
   await app.stop()
 })
 
-describe('ExpressApp', (): void => {
+describe(ExpressApp, (): void => {
   it('Middleware can map request arguments too', async (): Promise<void> => {
     app = new ExpressApp({ appLocation: './tests/__fixtures__/middleware-arguments', port })
     await app.prepare()

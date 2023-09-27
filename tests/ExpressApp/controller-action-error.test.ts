@@ -9,7 +9,7 @@ afterEach(async (): Promise<void> => {
   await app.stop()
 })
 
-describe('ExpressApp', (): void => {
+describe(ExpressApp, (): void => {
   it('It catches any action error and fails the request', async (): Promise<void> => {
     const eventListener = jest.fn()
     app = new ExpressApp({ appLocation: './tests/__fixtures__/controller-action-error', port })
