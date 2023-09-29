@@ -34,7 +34,7 @@ export default class ExpressApp extends EventEmitter {
 
   public constructor(options: ExpressAppOptions) {
     super()
-    this.options = { ...options }
+    this.options = { appLocation: './src', ...options }
     this.expressApp = express()
     this.httpServer = http.createServer(this.expressApp)
   }
@@ -127,6 +127,9 @@ export default class ExpressApp extends EventEmitter {
   }
 
   private async loadMiddleware(): Promise<void> {
+    // No controllers have been found
+    if (!this.namespaceRegistry) return
+
     const middlewareClassRegistries = this.namespaceRegistry.classes.filter(
       (classRegistry: ClassRegistry): boolean => !!classRegistry.decorations.find((decoration: MiddlewareDecoration): boolean => decoration.__type === 'middleware')
     )
