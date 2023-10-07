@@ -26,7 +26,7 @@ describe(ExpressApp, (): void => {
 
     expect(eventListener.mock.calls).toMatchObject([
       [{ event: 'request/start' }],
-      [{ event: 'request/middleware', name: 'bad' }],
+      [{ event: 'request/middleware', payload: { name: 'bad' } }],
       [{ event: 'request/error', error: new Error('Bad middleware') }]
     ])
   })

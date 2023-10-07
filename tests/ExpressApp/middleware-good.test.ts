@@ -36,14 +36,14 @@ describe(ExpressApp, (): void => {
 
     expect(eventListener.mock.calls).toMatchObject([
       [{ event: 'request/start' }],
-      [{ event: 'request/middleware', name: 'excellent' }],
-      [{ event: 'request/middleware', name: 'good' }],
-      [{ event: 'request/middleware', name: 'ControllerMiddlewareB' }],
-      [{ event: 'request/middleware', name: 'ControllerMiddlewareA' }],
-      [{ event: 'request/middleware', name: 'EachMiddleware' }],
-      [{ event: 'request/middleware', name: 'ActionMiddlewareB' }],
-      [{ event: 'request/middleware', name: 'ActionMiddlewareA' }],
-      [{ event: 'request/end', handler: 'GoodController#getEnd' }]
+      [{ event: 'request/middleware', payload: { name: 'excellent' } }],
+      [{ event: 'request/middleware', payload: { name: 'good' } }],
+      [{ event: 'request/middleware', payload: { name: 'ControllerMiddlewareB' } }],
+      [{ event: 'request/middleware', payload: { name: 'ControllerMiddlewareA' } }],
+      [{ event: 'request/middleware', payload: { name: 'EachMiddleware' } }],
+      [{ event: 'request/middleware', payload: { name: 'ActionMiddlewareB' } }],
+      [{ event: 'request/middleware', payload: { name: 'ActionMiddlewareA' } }],
+      [{ event: 'request/end', payload: { handler: 'GoodController#getEnd' } }]
     ])
   })
 })

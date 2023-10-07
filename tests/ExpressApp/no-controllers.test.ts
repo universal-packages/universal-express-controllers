@@ -15,6 +15,6 @@ describe(ExpressApp, (): void => {
     await app.prepare()
     await app.run()
 
-    expect(eventListener.mock.calls).toMatchObject([['No controllers have been found']])
+    expect(eventListener.mock.calls).toMatchObject([[{ event: 'warning', message: 'No controllers have been found' }]])
   })
 })

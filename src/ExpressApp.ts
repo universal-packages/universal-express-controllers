@@ -68,7 +68,11 @@ export default class ExpressApp extends EventEmitter {
     this.expressApp.use((request: Request, _: Response, next: NextFunction): void => {
       const requestMeasurer = startMeasurement()
       request['requestContext'] = { requestMeasurer } as RequestContext
-      this.emit('request/start', { event: 'request/start', request })
+
+      const event = { event: 'request/start', payload: { request } }
+
+      this.emit('*', event)
+      this.emit('request/start', event)
       next()
     })
 
@@ -88,14 +92,23 @@ export default class ExpressApp extends EventEmitter {
     this.expressApp.use((request: Request, response: Response, next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
       response.statusCode = StatusCodes.NOT_FOUND
-      this.emit('request/not-found', { event: 'request/not-found', request, response, measurement: requestContext.requestMeasurer.finish() })
+
+      const event = { event: 'request/not-found', measurement: requestContext.requestMeasurer.finish(), payload: { request, response } }
+
+      this.emit('*', event)
+      this.emit('request/not-found', event)
       response.end()
     })
 
     this.expressApp.use((error: Error, request: Request, response: Response, _next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
       response.status(StatusCodes.INTERNAL_SERVER_ERROR)
-      this.emit('request/error', { event: 'request/error', error, handler: requestContext.handler, request, response, measurement: requestContext.requestMeasurer.finish() })
+
+      const event = { event: 'request/error', error, measurement: requestContext.requestMeasurer.finish(), payload: { request, response } }
+
+      this.emit('*', event)
+      this.emit('request/error', event)
+
       response.end()
     })
   }
@@ -234,14 +247,21 @@ export default class ExpressApp extends EventEmitter {
         }
       }
     } else {
-      this.emit('warning', 'No controllers have been found')
+      const event = { event: 'warning', message: 'No controllers have been found' }
+
+      this.emit('*', event)
+      this.emit('warning', event)
     }
   }
 
   private generateMiddlewareHandler(middleware: MiddlewareLike, options?: Record<string, any>, middlewareMethodRegistry?: MethodRegistry): RequestHandler {
     if (/^\s*class\s+/.test(middleware.toString())) {
       return async (request: Request, response: Response, next: NextFunction): Promise<void> => {
-        this.emit('request/middleware', { event: 'request/middleware', name: middleware.name })
+        const event = { event: 'request/middleware', payload: { name: middleware.name } }
+
+        this.emit('*', event)
+        this.emit('request/middleware', event)
+
         try {
           const middlewareInstance = new (middleware as typeof BaseMiddleware)(request, response, options)
           const args = middlewareMethodRegistry ? this.generateActionArgs(middlewareMethodRegistry, request, response, options) : []
@@ -250,7 +270,10 @@ export default class ExpressApp extends EventEmitter {
 
           if (response.writableEnded) {
             const requestContext = request['requestContext'] as RequestContext
-            this.emit('request/end', { event: 'request/end', handler: middleware.name, measurement: requestContext.requestMeasurer.finish(), request, response })
+            const event = { event: 'request/end', measurement: requestContext.requestMeasurer.finish(), payload: { handler: middleware.name, request, response } }
+
+            this.emit('*', event)
+            this.emit('request/end', event)
           } else {
             next()
           }
@@ -262,7 +285,11 @@ export default class ExpressApp extends EventEmitter {
       return async (request: Request, response: Response, next: NextFunction): Promise<void> => {
         try {
           const functionName = /function\s+([\w\$]+)\s*\(/.exec(middleware.toString())
-          this.emit('request/middleware', { event: 'request/middleware', name: functionName ? functionName[1] : 'anonymous' })
+          const event = { event: 'request/middleware', payload: { name: functionName ? functionName[1] : 'anonymous' } }
+
+          this.emit('*', event)
+          this.emit('request/middleware', event)
+
           await (middleware as RequestHandler)(request, response, next)
         } catch (error) {
           next(error)
@@ -277,7 +304,12 @@ export default class ExpressApp extends EventEmitter {
       try {
         const handler = `${target.name}#${methodRegistry.propertyKey}`
         request['requestContext']['handler'] = handler
-        this.emit('request/handler', { event: 'request/handler', handler, request })
+
+        const handlerEvent = { event: 'request/handler', payload: { handler, request } }
+
+        this.emit('*', handlerEvent)
+        this.emit('request/handler', handlerEvent)
+
         const controllerInstance = new target(request, response)
         const args = this.generateActionArgs(methodRegistry, request, response)
 
@@ -285,7 +317,10 @@ export default class ExpressApp extends EventEmitter {
 
         response.end()
 
-        this.emit('request/end', { event: 'request/end', handler, measurement: requestContext.requestMeasurer.finish(), request, response })
+        const endEvent = { event: 'request/end', measurement: requestContext.requestMeasurer.finish(), payload: { handler, request, response } }
+
+        this.emit('*', endEvent)
+        this.emit('request/end', endEvent)
       } catch (error) {
         next(error)
       }

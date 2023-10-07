@@ -106,6 +106,7 @@ Enables a middleware to execute before all controller actions.
 
 ```js
 import { BaseController, Controller, ControllerUse } from '@universal-packages/express-controllers'
+
 import RoleMiddleware from './RoleMiddleware'
 
 @Controller('/auth', { bodyParser: 'json' })
@@ -198,6 +199,7 @@ Enables a middleware to execute before a specific action.
 
 ```js
 import { ActionUse, BaseController, Controller, Get } from '@universal-packages/express-controllers'
+
 import SecureMiddleware from './SecureMiddleware'
 
 @Controller('/auth', { bodyParser: 'json' })
@@ -307,9 +309,9 @@ Registers a class to behave as a middleware. To be able to access `this.request`
 > Middleware need to export the middleware class as the default module in order to all work correctly.
 
 ```js
-import { StatusCodes } from 'http-status-codes'
-import createHttpError from 'http-errors'
 import { BaseMiddleware, Middleware } from '@universal-packages/express-controllers'
+import createHttpError from 'http-errors'
+import { StatusCodes } from 'http-status-codes'
 
 @Middleware()
 export default class AuthMiddleware extends BaseMiddleware {
@@ -384,12 +386,13 @@ export default function top(request, response, next) {
 `ExpressApp` will emit events regarding request being processed.
 
 ```js
-expressApp.on('request/start', ({ request }) => console.log(request))
-expressApp.on('request/not-found', ({ request, response, measurement }) => console.log(request, response, measurement))
-expressApp.on('request/error', ({ error, request, response, measurement }) => console.log(error, request, response, measurement))
-expressApp.on('request/middleware', ({ name }) => console.log(name))
-expressApp.on('request/handler', ({ request, handler }) => console.log(request, handler))
-expressApp.on('request/end', ({ request, response, handler, measurement }) => console.log(request, response, handler, measurement))
+expressApp.on('request/start', (event) => console.log(event))
+expressApp.on('request/not-found', (event) => console.log(event))
+expressApp.on('request/error', (event) => console.log(event))
+expressApp.on('request/middleware', (event) => console.log(event))
+expressApp.on('request/handler', (event) => console.log(event))
+expressApp.on('request/end', (event) => console.log(event))
+expressApp.on('warning', (event) => console.log(event))
 ```
 
 ## Typescript
