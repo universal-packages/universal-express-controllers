@@ -1,5 +1,3 @@
-import fetch from 'node-fetch'
-
 import { ExpressApp } from '../../src'
 
 const port = 4000 + Number(process.env['JEST_WORKER_ID'])
@@ -30,7 +28,7 @@ describe(ExpressApp, (): void => {
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ post: true })
 
-    response = await fetch(`http://localhost:${port}/good/patch-end`, { method: 'patch' })
+    response = await fetch(`http://localhost:${port}/good/patch-end`, { method: 'PATCH' })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ patch: true })
 
@@ -56,7 +54,7 @@ describe(ExpressApp, (): void => {
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ post: true })
 
-    response = await fetch(`http://localhost:${port}/excellent/patch-end`, { method: 'patch' })
+    response = await fetch(`http://localhost:${port}/excellent/patch-end`, { method: 'PATCH' })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ patch: true })
 
@@ -80,44 +78,56 @@ describe(ExpressApp, (): void => {
     // )
 
     expect(eventListener.mock.calls).toMatchObject([
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'GoodController#getEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'GoodController#getEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'GoodController#postEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'GoodController#postEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'GoodController#patchEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'GoodController#patchEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'GoodController#putEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'GoodController#putEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'GoodController#deleteEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'GoodController#deleteEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'GoodController#headEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'GoodController#headEnd' } }],
-      [{ event: 'request/start' }],
+      [{ event: 'request/start', payload: { request: { method: 'GET' } } }],
+      [{ event: 'request/handler', payload: { handler: 'GoodController#getEnd', request: { method: 'GET' } } }],
+      [{ event: 'request/end', payload: { handler: 'GoodController#getEnd', request: { method: 'GET' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'POST' } } }],
+      [{ event: 'request/handler', payload: { handler: 'GoodController#postEnd', request: { method: 'POST' } } }],
+      [{ event: 'request/end', payload: { handler: 'GoodController#postEnd', request: { method: 'POST' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'PATCH' } } }],
+      [{ event: 'request/handler', payload: { handler: 'GoodController#patchEnd', request: { method: 'PATCH' } } }],
+      [{ event: 'request/end', payload: { handler: 'GoodController#patchEnd', request: { method: 'PATCH' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'PUT' } } }],
+      [{ event: 'request/handler', payload: { handler: 'GoodController#putEnd', request: { method: 'PUT' } } }],
+      [{ event: 'request/end', payload: { handler: 'GoodController#putEnd', request: { method: 'PUT' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'DELETE' } } }],
+      [{ event: 'request/handler', payload: { handler: 'GoodController#deleteEnd', request: { method: 'DELETE' } } }],
+      [{ event: 'request/end', payload: { handler: 'GoodController#deleteEnd', request: { method: 'DELETE' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'HEAD' } } }],
+      [{ event: 'request/handler', payload: { handler: 'GoodController#headEnd', request: { method: 'HEAD' } } }],
+      [{ event: 'request/end', payload: { handler: 'GoodController#headEnd', request: { method: 'HEAD' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'GET' } } }],
       [{ event: 'request/not-found' }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'ExcellentController#getEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'ExcellentController#getEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'ExcellentController#postEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'ExcellentController#postEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'ExcellentController#patchEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'ExcellentController#patchEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'ExcellentController#putEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'ExcellentController#putEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'ExcellentController#deleteEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'ExcellentController#deleteEnd' } }],
-      [{ event: 'request/start' }],
-      [{ event: 'request/handler', payload: { handler: 'ExcellentController#headEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'ExcellentController#headEnd' } }]
+
+      [{ event: 'request/start', payload: { request: { method: 'GET' } } }],
+      [{ event: 'request/handler', payload: { handler: 'ExcellentController#getEnd', request: { method: 'GET' } } }],
+      [{ event: 'request/end', payload: { handler: 'ExcellentController#getEnd', request: { method: 'GET' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'POST' } } }],
+      [{ event: 'request/handler', payload: { handler: 'ExcellentController#postEnd', request: { method: 'POST' } } }],
+      [{ event: 'request/end', payload: { handler: 'ExcellentController#postEnd', request: { method: 'POST' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'PATCH' } } }],
+      [{ event: 'request/handler', payload: { handler: 'ExcellentController#patchEnd', request: { method: 'PATCH' } } }],
+      [{ event: 'request/end', payload: { handler: 'ExcellentController#patchEnd', request: { method: 'PATCH' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'PUT' } } }],
+      [{ event: 'request/handler', payload: { handler: 'ExcellentController#putEnd', request: { method: 'PUT' } } }],
+      [{ event: 'request/end', payload: { handler: 'ExcellentController#putEnd', request: { method: 'PUT' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'DELETE' } } }],
+      [{ event: 'request/handler', payload: { handler: 'ExcellentController#deleteEnd', request: { method: 'DELETE' } } }],
+      [{ event: 'request/end', payload: { handler: 'ExcellentController#deleteEnd', request: { method: 'DELETE' } } }],
+
+      [{ event: 'request/start', payload: { request: { method: 'HEAD' } } }],
+      [{ event: 'request/handler', payload: { handler: 'ExcellentController#headEnd', request: { method: 'HEAD' } } }],
+      [{ event: 'request/end', payload: { handler: 'ExcellentController#headEnd', request: { method: 'HEAD' } } }]
     ])
   })
 })
