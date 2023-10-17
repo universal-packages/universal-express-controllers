@@ -30,7 +30,7 @@
     "pug": "^3.0.2"
   },
   "devDependencies": {
-    "@trivago/prettier-plugin-sort-imports": "^1.4.4",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@types/cookie-parser": "^1.4.4",
     "@types/cors": "^2.8.14",
     "@types/express": "^4.17.19",
@@ -53,6 +53,9 @@
     "singleQuote": true,
     "printWidth": 180,
     "trailingComma": "none",
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports"
+    ],
     "importOrder": [
       "^[./]"
     ],
