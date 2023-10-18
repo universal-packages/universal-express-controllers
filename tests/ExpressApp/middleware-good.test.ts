@@ -20,9 +20,9 @@ describe(ExpressApp, (): void => {
     app.on('request/not-found', eventListener)
     app.on('request/error', console.log)
 
-    let response = await fetch(`http://localhost:${port}/good/69`)
-    expect(response.status).toBe(200)
-    expect(await response.json()).toEqual([
+    await fGet('good/69')
+    expect(fResponse).toHaveReturnedWithStatus('OK')
+    expect(fResponseBody).toEqual([
       { excellentMiddleware: true },
       { goodMiddleware: true },
       { controllerMiddlewareB: true, options: { middle: 'c-b' } },

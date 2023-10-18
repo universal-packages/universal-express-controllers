@@ -13,9 +13,9 @@ describe(ExpressApp, (): void => {
     await app.prepare()
     await app.run()
 
-    let response = await fetch(`http://localhost:${port}/good?id=888`)
-    expect(response.status).toBe(200)
-    expect(await response.json()).toEqual({
+    await fGet('good', { id: '888' })
+    expect(fResponse).toHaveReturnedWithStatus('OK')
+    expect(fResponseBody).toEqual({
       general: { generalMiddleware: true, query: { id: '888' }, options: {} },
       controller: { controllerMiddleware: true, options: { controller: 'yes' }, query: { id: '888' } }
     })

@@ -19,8 +19,8 @@ describe(ExpressApp, (): void => {
     app.on('request/middleware', eventListener)
     app.on('request/error', eventListener)
 
-    let response = await fetch(`http://localhost:${port}/good`)
-    expect(response.status).toBe(200)
+    await fGet('good')
+    expect(fResponse).toHaveReturnedWithStatus('OK')
 
     expect(eventListener.mock.calls).toMatchObject([
       [{ event: 'request/start' }],
