@@ -1,19 +1,8 @@
 import { ExpressApp } from '../../src'
 
-const port = 4000 + Number(process.env['JEST_WORKER_ID'])
-
-let app: ExpressApp
-afterEach(async (): Promise<void> => {
-  await app.stop()
-})
-
 describe(ExpressApp, (): void => {
   it('Enable action methods to map properties in a fancy decorated way', async (): Promise<void> => {
-    app = new ExpressApp({ appLocation: './tests/__fixtures__/arguments', port })
-    await app.prepare()
-    await app.run()
-
-    app.on('request/error', console.log)
+    await runExpressApp('./tests/__fixtures__/arguments')
 
     await fPost('good/10/body', { this: 'is a body' })
     expect(fResponse).toHaveReturnedWithStatus('OK')
