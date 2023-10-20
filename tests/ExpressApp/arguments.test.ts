@@ -15,7 +15,6 @@ describe(ExpressApp, (): void => {
 
     app.on('request/error', console.log)
 
-    fContentType('application/json')
     await fPost('good/10/body', { this: 'is a body' })
     expect(fResponse).toHaveReturnedWithStatus('OK')
     expect(fResponseBody).toEqual({ body: { this: 'is a body' } })
