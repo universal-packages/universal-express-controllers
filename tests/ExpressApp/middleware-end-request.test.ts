@@ -9,9 +9,9 @@ describe(ExpressApp, (): void => {
     expect(fResponse).toHaveReturnedWithStatus('OK')
 
     expect(eventListener.mock.calls).toMatchObject([
-      [{ event: 'request/start' }],
-      [{ event: 'request/middleware', payload: { name: 'EnderMiddleware' } }],
-      [{ event: 'request/end', payload: { handler: 'EnderMiddleware' } }]
+      [{ event: 'request:start' }],
+      [{ event: 'request:middleware', payload: { name: 'EnderMiddleware' } }],
+      [{ event: 'request:end', payload: { handler: 'EnderMiddleware' } }]
     ])
   })
 })

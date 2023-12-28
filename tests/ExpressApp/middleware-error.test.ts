@@ -9,9 +9,9 @@ describe(ExpressApp, (): void => {
     expect(fResponse).toHaveReturnedWithStatus('INTERNAL_SERVER_ERROR')
 
     expect(eventListener.mock.calls).toMatchObject([
-      [{ event: 'request/start' }],
-      [{ event: 'request/middleware', payload: { name: 'bad' } }],
-      [{ event: 'request/error', error: new Error('Bad middleware') }]
+      [{ event: 'request:start' }],
+      [{ event: 'request:middleware', payload: { name: 'bad' } }],
+      [{ event: 'request:error', error: new Error('Bad middleware') }]
     ])
   })
 })

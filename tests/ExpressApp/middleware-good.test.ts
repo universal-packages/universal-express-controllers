@@ -19,16 +19,16 @@ describe(ExpressApp, (): void => {
     ])
 
     expect(eventListener.mock.calls).toMatchObject([
-      [{ event: 'request/start', payload: {} }],
-      [{ event: 'request/middleware', payload: { name: 'excellent' } }],
-      [{ event: 'request/middleware', payload: { name: 'good' } }],
-      [{ event: 'request/middleware', payload: { name: 'ControllerMiddlewareB' } }],
-      [{ event: 'request/middleware', payload: { name: 'ControllerMiddlewareA' } }],
-      [{ event: 'request/middleware', payload: { name: 'EachMiddleware' } }],
-      [{ event: 'request/middleware', payload: { name: 'ActionMiddlewareB' } }],
-      [{ event: 'request/middleware', payload: { name: 'ActionMiddlewareA' } }],
-      [{ event: 'request/handler', payload: { handler: 'GoodController#getEnd' } }],
-      [{ event: 'request/end', payload: { handler: 'GoodController#getEnd' } }]
+      [{ event: 'request:start', payload: {} }],
+      [{ event: 'request:middleware', payload: { name: 'excellent' } }],
+      [{ event: 'request:middleware', payload: { name: 'good' } }],
+      [{ event: 'request:middleware', payload: { name: 'ControllerMiddlewareB' } }],
+      [{ event: 'request:middleware', payload: { name: 'ControllerMiddlewareA' } }],
+      [{ event: 'request:middleware', payload: { name: 'EachMiddleware' } }],
+      [{ event: 'request:middleware', payload: { name: 'ActionMiddlewareB' } }],
+      [{ event: 'request:middleware', payload: { name: 'ActionMiddlewareA' } }],
+      [{ event: 'request:handler', payload: { handler: 'GoodController#getEnd' } }],
+      [{ event: 'request:end', payload: { handler: 'GoodController#getEnd' } }]
     ])
   })
 })

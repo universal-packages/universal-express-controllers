@@ -386,12 +386,12 @@ export default function top(request, response, next) {
 `ExpressApp` will emit events regarding request being processed.
 
 ```js
-expressApp.on('request/start', (event) => console.log(event))
-expressApp.on('request/not-found', (event) => console.log(event))
-expressApp.on('request/error', (event) => console.log(event))
-expressApp.on('request/middleware', (event) => console.log(event))
-expressApp.on('request/handler', (event) => console.log(event))
-expressApp.on('request/end', (event) => console.log(event))
+expressApp.on('request:start', (event) => console.log(event))
+expressApp.on('request:not-found', (event) => console.log(event))
+expressApp.on('request:error', (event) => console.log(event))
+expressApp.on('request:middleware', (event) => console.log(event))
+expressApp.on('request:handler', (event) => console.log(event))
+expressApp.on('request:end', (event) => console.log(event))
 expressApp.on('warning', (event) => console.log(event))
 ```
 
