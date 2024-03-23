@@ -16,9 +16,9 @@
     "update-universal-dependencies": "umaintenance update-universal-dependencies"
   },
   "dependencies": {
-    "@universal-packages/event-emitter": "^1.1.2",
-    "@universal-packages/module-loader": "^1.0.5",
-    "@universal-packages/namespaced-decorators": "^1.2.5",
+    "@universal-packages/event-emitter": "^1.1.3",
+    "@universal-packages/module-loader": "^1.0.6",
+    "@universal-packages/namespaced-decorators": "^1.2.6",
     "@universal-packages/time-measurer": "^1.4.9",
     "express": "^4.18.2",
     "get-port": "^5.1.1",
