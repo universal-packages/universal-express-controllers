@@ -1,8 +1,8 @@
-import { ExpressApp } from '../../src'
+import { ExpressControllers } from '../../src'
 
-describe(ExpressApp, (): void => {
+describe(ExpressControllers, (): void => {
   it('Enable action methods to map properties in a fancy decorated way', async (): Promise<void> => {
-    await runExpressApp('./tests/__fixtures__/arguments')
+    await runExpressControllers('./tests/__fixtures__/arguments')
 
     await fPost('good/10/body', { this: 'is a body' })
     expect(fResponse).toHaveReturnedWithStatus('OK')

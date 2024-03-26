@@ -4,7 +4,7 @@ import { ClassRegistry, ClassType, Decoration, MethodRegistry, NamespaceRegistry
 import { startMeasurement } from '@universal-packages/time-measurer'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-import express, { Express, NextFunction, Request, RequestHandler, Response, Router } from 'express'
+import express, { Express, NextFunction, Request, RequestHandler, Response } from 'express'
 import getPort from 'get-port'
 import helmet from 'helmet'
 import http from 'http'
@@ -16,13 +16,13 @@ import { ArgumentDecoration } from './Argument.types'
 import BaseMiddleware from './BaseMiddleware'
 import { ControllerDecoration } from './Controller.types'
 import { ControllerUseDecoration } from './ControllerUse.types'
-import { BodyParser, ExpressAppOptions, MiddlewareLike, RequestContext } from './ExpressApp.types'
+import { BodyParser, ExpressControllersOptions, MiddlewareLike, RequestContext } from './ExpressControllers.types'
 import { MiddlewareDecoration } from './Middleware.types'
 import { NAMESPACE } from './namespace'
 
-export default class ExpressApp extends EventEmitter {
-  public readonly options: ExpressAppOptions
-  public readonly expressApp: Express
+export default class ExpressControllers extends EventEmitter {
+  public readonly options: ExpressControllersOptions
+  public readonly expressControllers: Express
   public readonly httpServer: http.Server
 
   private namespaceRegistry: NamespaceRegistry
@@ -32,11 +32,11 @@ export default class ExpressApp extends EventEmitter {
 
   private eachMiddleware: { middleware: MiddlewareLike; methodRegistry: MethodRegistry }[] = []
 
-  public constructor(options: ExpressAppOptions) {
+  public constructor(options: ExpressControllersOptions) {
     super()
     this.options = { appLocation: './src', ...options }
-    this.expressApp = express()
-    this.httpServer = http.createServer(this.expressApp)
+    this.expressControllers = express()
+    this.httpServer = http.createServer(this.expressControllers)
   }
 
   public async prepare(): Promise<void> {
@@ -65,7 +65,7 @@ export default class ExpressApp extends EventEmitter {
   }
 
   private async applyPreMiddleware(): Promise<void> {
-    this.expressApp.use((request: Request, _: Response, next: NextFunction): void => {
+    this.expressControllers.use((request: Request, _: Response, next: NextFunction): void => {
       const requestMeasurer = startMeasurement()
       request['requestContext'] = { requestMeasurer } as RequestContext
 
@@ -73,20 +73,20 @@ export default class ExpressApp extends EventEmitter {
       next()
     })
 
-    if (this.options.helmet) this.expressApp.use(helmet(this.options.helmet === true ? {} : this.options.helmet))
-    if (this.options.cors) this.expressApp.use(cors(this.options.cors === true ? {} : this.options.cors))
+    if (this.options.helmet) this.expressControllers.use(helmet(this.options.helmet === true ? {} : this.options.helmet))
+    if (this.options.cors) this.expressControllers.use(cors(this.options.cors === true ? {} : this.options.cors))
     if (this.options.cookieParser)
-      this.expressApp.use(
+      this.expressControllers.use(
         cookieParser(
           this.options.cookieParser === true ? undefined : this.options.cookieParser.secret,
           this.options.cookieParser === true ? undefined : this.options.cookieParser.options
         )
       )
-    if (this.options.viewEngine) this.expressApp.set('view engine', this.options.viewEngine)
+    if (this.options.viewEngine) this.expressControllers.set('view engine', this.options.viewEngine)
   }
 
   private async applyPostMiddleware(): Promise<void> {
-    this.expressApp.use((request: Request, response: Response, next: NextFunction): void => {
+    this.expressControllers.use((request: Request, response: Response, next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
       response.statusCode = StatusCodes.NOT_FOUND
 
@@ -94,7 +94,7 @@ export default class ExpressApp extends EventEmitter {
       response.end()
     })
 
-    this.expressApp.use((error: Error, request: Request, response: Response, _next: NextFunction): void => {
+    this.expressControllers.use((error: Error, request: Request, response: Response, _next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
       response.status(StatusCodes.INTERNAL_SERVER_ERROR)
 
@@ -147,7 +147,7 @@ export default class ExpressApp extends EventEmitter {
       if (currentModule.exports.strategy === 'each') {
         this.eachMiddleware.push({ middleware: currentModule.exports, methodRegistry: middlewareMethodRegistry })
       } else {
-        this.expressApp.use(this.generateMiddlewareHandler(currentModule.exports, {}, middlewareMethodRegistry))
+        this.expressControllers.use(this.generateMiddlewareHandler(currentModule.exports, {}, middlewareMethodRegistry))
       }
     }
   }
@@ -234,7 +234,7 @@ export default class ExpressApp extends EventEmitter {
           actionHandlers.push(this.generateActionHandler(currentMethodRegistry, currentClassRegistry.target))
 
           // Join controller and action routes for a final route, apply all controller and action middleware
-          this.expressApp[actionDecoration.method.toLocaleLowerCase()](`${controllerRoute}${route}`, [...controllerHandlers, ...actionHandlers])
+          this.expressControllers[actionDecoration.method.toLocaleLowerCase()](`${controllerRoute}${route}`, [...controllerHandlers, ...actionHandlers])
         }
       }
     } else {

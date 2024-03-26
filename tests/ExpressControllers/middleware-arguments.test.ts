@@ -1,8 +1,8 @@
-import { ExpressApp } from '../../src'
+import { ExpressControllers } from '../../src'
 
-describe(ExpressApp, (): void => {
+describe(ExpressControllers, (): void => {
   it('Middleware can map request arguments too', async (): Promise<void> => {
-    await runExpressApp('./tests/__fixtures__/middleware-arguments')
+    await runExpressControllers('./tests/__fixtures__/middleware-arguments')
 
     await fGet('good', { id: '888' })
     expect(fResponse).toHaveReturnedWithStatus('OK')

@@ -12,7 +12,7 @@ export type BodyParser = 'json' | 'raw' | 'text' | 'urlencoded'
 export type MiddlewareLike = typeof BaseMiddleware | RequestHandler
 export type MiddlewareStrategy = 'each' | 'global'
 
-export interface ExpressAppOptions extends ListenOptions {
+export interface ExpressControllersOptions extends ListenOptions {
   appLocation: string
   bodyParser?: BodyParser | BodyParser[]
   cookieParser?: { secret?: string; options: CookieParseOptions } | true

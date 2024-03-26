@@ -1,9 +1,9 @@
-import { ExpressApp } from '../../src'
+import { ExpressControllers } from '../../src'
 
-describe(ExpressApp, (): void => {
+describe(ExpressControllers, (): void => {
   it('It executed configured middleware all across controllers', async (): Promise<void> => {
     const eventListener = jest.fn()
-    await runExpressApp('./tests/__fixtures__/middleware-good', eventListener)
+    await runExpressControllers('./tests/__fixtures__/middleware-good', eventListener)
 
     await fGet('good/69')
 

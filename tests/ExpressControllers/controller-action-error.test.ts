@@ -1,9 +1,9 @@
-import { ExpressApp } from '../../src'
+import { ExpressControllers } from '../../src'
 
-describe(ExpressApp, (): void => {
+describe(ExpressControllers, (): void => {
   it('It catches any action error and fails the request', async (): Promise<void> => {
     const eventListener = jest.fn()
-    await runExpressApp('./tests/__fixtures__/controller-action-error', eventListener)
+    await runExpressControllers('./tests/__fixtures__/controller-action-error', eventListener)
 
     await fGet('bad')
     expect(fResponse).toHaveReturnedWithStatus('INTERNAL_SERVER_ERROR')

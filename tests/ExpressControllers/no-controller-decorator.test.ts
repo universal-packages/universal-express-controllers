@@ -1,9 +1,9 @@
-import { ExpressApp } from '../../src'
+import { ExpressControllers } from '../../src'
 
-describe(ExpressApp, (): void => {
+describe(ExpressControllers, (): void => {
   it('Throws if a class has actions but not decorated with controller decorator', async (): Promise<void> => {
     let error: Error
-    const app = new ExpressApp({ appLocation: './tests/__fixtures__/no-controller-decorator' })
+    const app = new ExpressControllers({ appLocation: './tests/__fixtures__/no-controller-decorator' })
 
     try {
       await app.prepare()

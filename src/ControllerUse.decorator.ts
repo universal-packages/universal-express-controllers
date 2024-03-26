@@ -1,7 +1,7 @@
 import { ClassDecorator, ClassDecoratorFunction } from '@universal-packages/namespaced-decorators'
 
 import { ControllerUseDecoration } from './ControllerUse.types'
-import { MiddlewareLike } from './ExpressApp.types'
+import { MiddlewareLike } from './ExpressControllers.types'
 import { NAMESPACE } from './namespace'
 
 export function ControllerUse<O = any>(middleware: MiddlewareLike, options?: O): ClassDecoratorFunction {

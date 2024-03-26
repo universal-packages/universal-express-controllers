@@ -20,26 +20,26 @@ npm install helmet
 npm install pug
 ```
 
-## ExpressApp
+## ExpressControllers
 
 Express app is the main interface to build an express app from the decorated controllers and also start running a web server.
 
 ```js
-import { ExpressApp } from '@universal-packages/express-controllers'
+import { ExpressControllers } from '@universal-packages/express-controllers'
 
-const expressApp = new ExpressApp({ appLocation: './src', port: 3000 })
+const expressControllers = new ExpressControllers({ appLocation: './src', port: 3000 })
 
 // Load decorated controllers and middleware
-await expressApp.prepare()
-await expressApp.run()
+await expressControllers.prepare()
+await expressControllers.run()
 
 // Once finishing
-await expressApp.stop()
+await expressControllers.stop()
 ```
 
 ### Options
 
-`ExpressApp` takes as options the same [ListenOptions from net](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/net.d.ts#L381), additionally takes the following ones:
+`ExpressControllers` takes as options the same [ListenOptions from net](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/node/net.d.ts#L381), additionally takes the following ones:
 
 - **`appLocation`** `String`
   Where should we look for controllers and middleware and load them?
@@ -383,16 +383,16 @@ export default function top(request, response, next) {
 
 ## Events
 
-`ExpressApp` will emit events regarding request being processed.
+`ExpressControllers` will emit events regarding request being processed.
 
 ```js
-expressApp.on('request:start', (event) => console.log(event))
-expressApp.on('request:not-found', (event) => console.log(event))
-expressApp.on('request:error', (event) => console.log(event))
-expressApp.on('request:middleware', (event) => console.log(event))
-expressApp.on('request:handler', (event) => console.log(event))
-expressApp.on('request:end', (event) => console.log(event))
-expressApp.on('warning', (event) => console.log(event))
+expressControllers.on('request:start', (event) => console.log(event))
+expressControllers.on('request:not-found', (event) => console.log(event))
+expressControllers.on('request:error', (event) => console.log(event))
+expressControllers.on('request:middleware', (event) => console.log(event))
+expressControllers.on('request:handler', (event) => console.log(event))
+expressControllers.on('request:end', (event) => console.log(event))
+expressControllers.on('warning', (event) => console.log(event))
 ```
 
 ## Typescript

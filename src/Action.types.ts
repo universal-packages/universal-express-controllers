@@ -1,6 +1,6 @@
 import { Decoration } from '@universal-packages/namespaced-decorators'
 
-import { BodyParser, HTTPVerb } from './ExpressApp.types'
+import { BodyParser, HTTPVerb } from './ExpressControllers.types'
 
 export interface ActionOptions {
   bodyParser?: BodyParser | BodyParser[] | 'none'

@@ -1,7 +1,7 @@
 import { MethodDecorator, MethodDecoratorFunction } from '@universal-packages/namespaced-decorators'
 
 import { ActionDecoration, ActionOptions } from './Action.types'
-import { HTTPVerb } from './ExpressApp.types'
+import { HTTPVerb } from './ExpressControllers.types'
 import { NAMESPACE } from './namespace'
 
 export function Action(method: HTTPVerb, path?: string): MethodDecoratorFunction
