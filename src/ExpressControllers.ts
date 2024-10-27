@@ -22,7 +22,7 @@ import { NAMESPACE } from './namespace'
 
 export default class ExpressControllers extends EventEmitter {
   public readonly options: ExpressControllersOptions
-  public readonly expressControllers: Express
+  public readonly expressInstance: Express
   public readonly httpServer: http.Server
 
   private namespaceRegistry: NamespaceRegistry
@@ -35,8 +35,8 @@ export default class ExpressControllers extends EventEmitter {
   public constructor(options: ExpressControllersOptions) {
     super()
     this.options = { appLocation: './src', ...options }
-    this.expressControllers = express()
-    this.httpServer = http.createServer(this.expressControllers)
+    this.expressInstance = express()
+    this.httpServer = http.createServer(this.expressInstance)
   }
 
   public async prepare(): Promise<void> {
@@ -65,7 +65,7 @@ export default class ExpressControllers extends EventEmitter {
   }
 
   private async applyPreMiddleware(): Promise<void> {
-    this.expressControllers.use((request: Request, _: Response, next: NextFunction): void => {
+    this.expressInstance.use((request: Request, _: Response, next: NextFunction): void => {
       const requestMeasurer = startMeasurement()
       request['requestContext'] = { requestMeasurer } as RequestContext
 
@@ -73,20 +73,20 @@ export default class ExpressControllers extends EventEmitter {
       next()
     })
 
-    if (this.options.helmet) this.expressControllers.use(helmet(this.options.helmet === true ? {} : this.options.helmet))
-    if (this.options.cors) this.expressControllers.use(cors(this.options.cors === true ? {} : this.options.cors))
+    if (this.options.helmet) this.expressInstance.use(helmet(this.options.helmet === true ? {} : this.options.helmet))
+    if (this.options.cors) this.expressInstance.use(cors(this.options.cors === true ? {} : this.options.cors))
     if (this.options.cookieParser)
-      this.expressControllers.use(
+      this.expressInstance.use(
         cookieParser(
           this.options.cookieParser === true ? undefined : this.options.cookieParser.secret,
           this.options.cookieParser === true ? undefined : this.options.cookieParser.options
         )
       )
-    if (this.options.viewEngine) this.expressControllers.set('view engine', this.options.viewEngine)
+    if (this.options.viewEngine) this.expressInstance.set('view engine', this.options.viewEngine)
   }
 
   private async applyPostMiddleware(): Promise<void> {
-    this.expressControllers.use((request: Request, response: Response, next: NextFunction): void => {
+    this.expressInstance.use((request: Request, response: Response, next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
       response.statusCode = StatusCodes.NOT_FOUND
 
@@ -94,7 +94,7 @@ export default class ExpressControllers extends EventEmitter {
       response.end()
     })
 
-    this.expressControllers.use((error: Error, request: Request, response: Response, _next: NextFunction): void => {
+    this.expressInstance.use((error: Error, request: Request, response: Response, _next: NextFunction): void => {
       const requestContext = request['requestContext'] as RequestContext
       response.status(StatusCodes.INTERNAL_SERVER_ERROR)
 
@@ -147,7 +147,7 @@ export default class ExpressControllers extends EventEmitter {
       if (currentModule.exports.strategy === 'each') {
         this.eachMiddleware.push({ middleware: currentModule.exports, methodRegistry: middlewareMethodRegistry })
       } else {
-        this.expressControllers.use(this.generateMiddlewareHandler(currentModule.exports, {}, middlewareMethodRegistry))
+        this.expressInstance.use(this.generateMiddlewareHandler(currentModule.exports, {}, middlewareMethodRegistry))
       }
     }
   }
@@ -234,7 +234,7 @@ export default class ExpressControllers extends EventEmitter {
           actionHandlers.push(this.generateActionHandler(currentMethodRegistry, currentClassRegistry.target))
 
           // Join controller and action routes for a final route, apply all controller and action middleware
-          this.expressControllers[actionDecoration.method.toLocaleLowerCase()](`${controllerRoute}${route}`, [...controllerHandlers, ...actionHandlers])
+          this.expressInstance[actionDecoration.method.toLocaleLowerCase()](`${controllerRoute}${route}`, [...controllerHandlers, ...actionHandlers])
         }
       }
     } else {
