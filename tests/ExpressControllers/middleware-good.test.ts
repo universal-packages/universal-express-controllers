@@ -1,7 +1,7 @@
 import { ExpressControllers } from '../../src'
 
 describe(ExpressControllers, (): void => {
-  it('It executed configured middleware all across controllers', async (): Promise<void> => {
+  it('executes configured middleware all across controllers', async (): Promise<void> => {
     const eventListener = jest.fn()
     await runExpressControllers('./tests/__fixtures__/middleware-good', eventListener)
 
@@ -29,6 +29,24 @@ describe(ExpressControllers, (): void => {
       [{ event: 'request:middleware', payload: { name: 'ActionMiddlewareA' } }],
       [{ event: 'request:handler', payload: { handler: 'GoodController#getEnd' } }],
       [{ event: 'request:end', payload: { handler: 'GoodController#getEnd' } }]
+    ])
+  })
+
+  it('executes middleware with path', async (): Promise<void> => {
+    const eventListener = jest.fn()
+    await runExpressControllers('./tests/__fixtures__/middleware-good', eventListener)
+
+    await fGet('my-special-path')
+
+    expect(fResponse).toHaveReturnedWithStatus('OK')
+    expect(fResponseBody).toEqual({ pathMiddleware: true })
+
+    expect(eventListener.mock.calls).toMatchObject([
+      [{ event: 'request:start', payload: expect.anything() }],
+      [{ event: 'request:middleware', payload: { name: 'excellent' } }],
+      [{ event: 'request:middleware', payload: { name: 'good' } }],
+      [{ event: 'request:middleware', payload: { name: 'PathMiddleware' } }],
+      [{ event: 'request:end', payload: { handler: 'PathMiddleware' } }]
     ])
   })
 })

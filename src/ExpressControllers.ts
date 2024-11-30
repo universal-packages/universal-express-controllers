@@ -138,17 +138,33 @@ export default class ExpressControllers extends EventEmitter {
       (classRegistry: ClassRegistry): boolean => !!classRegistry.decorations.find((decoration: MiddlewareDecoration): boolean => decoration.__type === 'middleware')
     )
 
+    const pathMiddleware: { middleware: typeof BaseMiddleware; methodRegistry: MethodRegistry; path: string }[] = []
+
     for (let i = 0; i < this.middlewareModules.length; i++) {
       const currentModule = this.middlewareModules[i]
       const middlewareClassRegistry = middlewareClassRegistries.find((registry: ClassRegistry): boolean => registry.target === currentModule.exports)
       const middlewareMethodRegistry = middlewareClassRegistry?.methods.find((methodRegistry: MethodRegistry): boolean => methodRegistry.propertyKey === 'middleware')
+      const middlewareClassDecoration = middlewareClassRegistry?.decorations.find((decoration: MiddlewareDecoration): boolean => decoration.__type === 'middleware') as
+        | MiddlewareDecoration
+        | undefined
 
-      // We preserve middle ware that needs to be used per route handler
-      if (currentModule.exports.strategy === 'each') {
-        this.eachMiddleware.push({ middleware: currentModule.exports, methodRegistry: middlewareMethodRegistry })
+      if (middlewareClassDecoration?.path) {
+        pathMiddleware.push({ middleware: currentModule.exports, methodRegistry: middlewareMethodRegistry, path: middlewareClassDecoration.path })
       } else {
-        this.expressInstance.use(this.generateMiddlewareHandler(currentModule.exports, {}, middlewareMethodRegistry))
+        // We preserve middle ware that needs to be used per route handler
+        if (middlewareClassDecoration?.options?.strategy === 'each') {
+          this.eachMiddleware.push({ middleware: currentModule.exports, methodRegistry: middlewareMethodRegistry })
+        } else {
+          this.expressInstance.use(this.generateMiddlewareHandler(currentModule.exports, {}, middlewareMethodRegistry))
+        }
       }
+    }
+
+    // We set middleware that has its own path to be applied to
+    for (let i = 0; i < pathMiddleware.length; i++) {
+      const currentPathMiddleware = pathMiddleware[i]
+      const finalPath = `/${currentPathMiddleware.path}`.replace(/\/+/g, '/').replace(/(.+)\/$/, '$1')
+      this.expressInstance.use(finalPath, this.generateMiddlewareHandler(currentPathMiddleware.middleware, {}, currentPathMiddleware.methodRegistry))
     }
   }
 

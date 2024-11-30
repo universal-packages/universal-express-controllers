@@ -302,7 +302,7 @@ export default class AuthorizationMiddleware extends BaseMiddleware {
 }
 ```
 
-#### **`@Middleware()`**
+#### **`@Middleware([path: string, options: Object])`**
 
 Registers a class to behave as a middleware. To be able to access `this.request` and `this.response` and `this.options` inside your middleware action you can extend your controller with the `BaseMiddleware`, is not necessary but useful to access those object that way instead of using `Argument Decorators`.
 
@@ -353,27 +353,43 @@ Recommended structure:
   |_ controllers
 ```
 
-By default global middleware is applied to the express app as any other to level middleware like `cors` or `helmet` but you can configure your global middleware to run individually alongside each action by defining the static property `strategy` to `each`. Then the middleware will run just after the body parser is applied and before the controller an action middleware.
+### Global middleware options
+
+#### path
+
+Some times you require express to handle an specific path in a specific way, for this when declaring global middleware class you can set a pth for it to be applied. For example when you do not care about the http verb just the params.
 
 ```js
-@Middleware()
-export default class AuthMiddleware extends BaseMiddleware {
-  public static readonly strategy = 'each' // default 'global'
-
-  async middleware(@Request() request, @MiddlewareOptions() options) {
-    if (options.sometimes && Math.random() > 0.5) {
-      if (!request['user']) throw createHttpError(StatusCodes.UNAUTHORIZED)
-    }
+@Middleware('/weg')v
+export default class WegMiddleware extends BaseMiddleware {
+  async middleware() {
+    this.status('OK').send('Thanks for visiting the web')
   }
 }
 ```
+
+#### Options
+
+- **`strategy`** `'global' | 'each'` `default: global`
+  By default global middleware is applied to the express app as any other middleware like `cors` or `helmet` but you can configure your global middleware to run individually alongside each action by setting the `strategy` option to `each`. Then the middleware will run just after the body parser is applied and before the controller an action middleware.
+
+  ```js
+  @Middleware({ strategy: 'each' })
+  export default class AuthMiddleware extends BaseMiddleware {
+    async middleware(@Request() request) {
+      if (options.sometimes && Math.random() > 0.5) {
+        if (!request['user']) throw createHttpError(StatusCodes.UNAUTHORIZED)
+      }
+    }
+  }
+  ```
 
 ## Middleware as functions
 
 You can use middleware as a pure `RequestHandler` function in both top level middleware and middleware passed through `@ControllerUse()` or `@ActionUse()`.
 
 ```js
-export default function top(request, response, next) {
+export default function middleware(request, response, next) {
   request.context = {}
   next()
 }
